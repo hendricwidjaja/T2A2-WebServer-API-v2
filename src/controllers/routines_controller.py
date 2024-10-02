@@ -179,7 +179,7 @@ def liked_routines():
         return routines_schema.dump(liked_routines), 200
     
     # Else, if user hasn't liked any posts yet
-    return {"message": "You haven't liked any routines yet."}, 200
+    return {"message": "You haven't liked any routines yet."}, 405
 
 # /routines/<int:routine_id>/copy - POST - Copy another user's routine as personal private routine
 @routines_bp.route("/<int:routine_id>/copy", methods=["POST"])
@@ -473,16 +473,21 @@ def update_routine_exercise(routine_id, routine_exercise_id):
     if routine_exercise.routine_id != routine_id:
         return {"error": f"Routine with ID '{routine_id}' does not have a routine exercise with ID '{routine_exercise_id}'."}, 404
     
-    # Check if the exercise exists
+    # Grab exercise ID from body of data for validation
     exercise_id = body_data.get('exercise_id')
-    exer_stmt = db.select(Exercise).filter_by(id=exercise_id)
-    exercise_exists = db.session.scalar(exer_stmt)
 
-    # If exercise does not exist
-    if not exercise_exists:
-        # Return not found error
-        return {"error": f"Exercise with ID {exercise_id} does not exist."}, 404
+    # If user has given an input
+    if exercise_id is not None:
+        # Search and select the exercise by exercise ID from the table
+        exer_stmt = db.select(Exercise).filter_by(id=exercise_id)
+        exercise_exists = db.session.scalar(exer_stmt)
 
+        # If exercise does not exist
+        if not exercise_exists:
+            # Return not found error
+            return {"error": f"Exercise with ID {exercise_id} does not exist."}, 404
+        
+    # If exercise ID was not given OR exercise given exists.
     routine_exercise.routine_id = routine_id
     routine_exercise.exercise_id = body_data.get("exercise_id") or routine_exercise.exercise_id
     routine_exercise.sets = body_data.get("sets") or routine_exercise.sets
