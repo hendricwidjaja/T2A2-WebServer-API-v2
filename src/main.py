@@ -2,7 +2,6 @@ import os # Import os for environment functionality
 from flask import Flask # Import flask to create flask application
 from marshmallow.exceptions import ValidationError # Import ValidationError to utlise in app.errorhandler
 from sqlalchemy.exc import IntegrityError # Import IntegrityError to utilise in app.errorhandler
-from dotenv import load_dotenv
 
 # Import sqlalchemy, mashmallow, bcrypt and JWTManager to be initialised
 from init import db, ma, bcrypt, jwt
@@ -16,8 +15,6 @@ from controllers.routines_controller import routines_bp
 # Create Flask app
 def create_app():
     app = Flask(__name__)
-
-    load_dotenv()
 
     # Configure connection to database. Retrieve DATABASE_URL & JWT_SECRET_KEY from .env 
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
