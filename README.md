@@ -255,6 +255,13 @@ Screenshots from **Insomnia API Client**, which were taken for testing purposes 
 ![alt text](docs/R8/HTTP_reqeust_response_eg.png)
 ![alt text](docs/R8/JWT_token_example.png)
 
+---
+
+### **NOTE: User, Exercise, Routine & Routine_Exercise IDs**
+*All user, exercise, routine and routine exercise IDs within URLs are integer values.*
+
+---
+
 *Before the explanation of each end point, a brief explanation for the CLI controllers are also below:*
 
 ```bash
@@ -310,14 +317,19 @@ def drop_tables():
     print("Tables dropped.")
 ```
 
-### Authentication Controller
-Note: All Authentication Controller URLs include a prefix of "/auth" which is defined in the "auth" flask Blueprint
+---
+
+## Authentication Controller
+
+**NOTE**: All Authentication Controller URLs include a prefix of "/auth" which is defined in the "auth" flask Blueprint
 
 ```bash
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 ```
 
-#### 1. Register new user
+---
+
+### 1. Register new user
 
 - **HTTP VERB**: POST
 - **ROUTE PATH**: @auth_bp.route("/register", methods=["POST"])
@@ -326,14 +338,16 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 - **Required Headers**: N/A
 - **Required Body**: Email, Username & Password (Optional: firstname, lastname, is_admin)
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![Register_new_user_201](./docs/R8/Authentication%20-%20Register%20new%20user%20-%20201.png)
 ![Register_new_user_400](<docs/R8/Authentication - Register new user - 400.png>)
 ![Register_new_user_401](<docs/R8/Authentication - Register new user - 401.png>)
 ![Register_new_user_403](<docs/R8/Authentication - Register new user - 403.png>)
 
-#### 2. User Login
+---
+
+### 2. User Login
 
 - **HTTP VERB**: POST
 - **ROUTE PATH**: @auth_bp.route("/login", methods=["POST"])
@@ -342,12 +356,14 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 - **Required Headers**: N/A
 - **Required Body**: Email & Password
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Authentication - User Login - 200.png>)
 ![alt text](<docs/R8/Authentication - User Login - 400.png>)
 
-#### 3. User Update Details
+---
+
+### 3. User Update Details
 
 - **HTTP VERB**: PUT / PATCH
 - **ROUTE PATH**: @auth_bp.route("/users/", methods=["PUT", "PATCH"])
@@ -356,23 +372,25 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 - **Required Headers**: JWT Token
 - **Required Body**: (Options: Username, password, firstname, lastname)
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Authentication - User Update Details - 200.png>)
 ![alt text](<docs/R8/Authentication - User Update Details - 400.png>)
 
-#### 4.Delete user
+---
+
+### 4.Delete user
 
 - **HTTP VERB**: DELETE
-- **ROUTE PATH**: @auth_bp.route("/users/<int:user_id>", methods=["DELETE"])
-- **URL**: /auth/users/<int:user_id>
+- **ROUTE PATH**: @auth_bp.route("/users/<user_id>", methods=["DELETE"])
+- **URL**: /auth/users/<user_id>
 - **Description**: Allows a logged in user to delete their account. If user is an admin, they can delete ANY account. A user can insert whether they would like to leave any public routines on the database (default = delete both private & public routines)
 - **Required Headers**: JWT Token
 - **Required Body**: "delete_public_routines" (default=True).
   - To keep public routines on server, type in "delete_public_routines": false
   - To delete both public and private routines on server, leave body empty OR type in "delete_public_routines": true
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Authentication - Delete user - 200.png>)
 ![alt text](<docs/R8/Authentication - Delete user - 400.png>)
@@ -380,14 +398,25 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 ![alt text](<docs/R8/Authentication - Delete user - 403.png>)
 ![alt text](<docs/R8/Authentication - Delete user - 404.png>)
 
-### Exercises Controller
-Note: All Exercise Controller URLs include a prefix of "/exercises" which is defined in the "exercises" flask Blueprint
+---
+
+## Exercises Controller
+
+NOTE: All Exercise Controller URLs include a prefix of "/exercises" which is defined in the "exercises" flask Blueprint
+
+NOTE 2: List of valid body_parts
 
 ```bash
 exercises_bp = Blueprint("exercises", __name__, url_prefix="/exercises")
 ```
 
-#### 5. Fetch all exercises
+```bash
+VALID_BODYPARTS = ("Chest", "Shoulders", "Back", "Legs", "Triceps", "Biceps", "Core", "Cardio")
+```
+
+---
+
+### 5. Fetch all exercises
 
 - **HTTP VERB**: GET
 - **ROUTE PATH**: @exercises_bp.route("/", methods=["GET"])
@@ -396,67 +425,77 @@ exercises_bp = Blueprint("exercises", __name__, url_prefix="/exercises")
 - **Required Headers**: N/A
 - **Required Body**: N/A
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Exercise - Fetch all exercises - 200.png>)
 ![alt text](<docs/R8/Exercise - Fetch all exercises - 404.png>)
 
-#### 6. Fetch all exercises (specific body_part)
+---
+
+### 6. Fetch all exercises (specific body_part)
 
 - **HTTP VERB**: GET
 - **ROUTE PATH**: @exercises_bp.route("/body-part/<body_part>", methods=["GET"])
 - **URL**: /exercises/body-part/<body_part>
 - **Description**: Fetches all exercises filtered by a specific body_part (e.g. Back). Header / Body data is not required, however this is dynamic **URL**. User will need to enter a valid "body_part" in the **URL** itself. (e.g. /exercises/body-part/Back)
-- **Required Headers**:<italic>See description</italic>
+- **Required Headers**:*See description*
 - **Required Body**:*See description*
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Exercise - Fetch all exercises (specific body_part) - 200.png>)
 ![alt text](<docs/R8/Exercise - Fetch all exercises (specific body_part) - 404.png>)
 
-#### 7. Fetch exercise by ID
+---
+
+### 7. Fetch exercise by ID
 
 - **HTTP VERB**: GET
-- **ROUTE PATH**: @exercises_bp.route("/id/<int:exercise_id>", methods=["GET"])
-- **URL**: /exercises/id/<int:exercise_id>
+- **ROUTE PATH**: @exercises_bp.route("/id/<exercise_id>", methods=["GET"])
+- **URL**: /exercises/id/<exercise_id>
 - **Description**: Fetches a specific exercise based on exercise_id. Exercise ID to be input into **URL** (e.g. exercises/id/5) where exercise ID = 5
 - **Required Headers**: N/A
 - **Required Body**: N/A
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Exercise - Fetch exercise by ID - 200.png>)
 ![alt text](<docs/R8/Exercise - Fetch exercise by ID - 404.png>)
 
-#### 8. Fetch all exercises by user ID
+---
+
+### 8. Fetch all exercises by user ID
 
 - **HTTP VERB**: GET
-- **ROUTE PATH**: @exercises_bp.route("/user/<int:user_id>/", methods=["GET"])
-- **URL**: /exercises/user/<int:user_id>/
+- **ROUTE PATH**: @exercises_bp.route("/user/<user_id>/", methods=["GET"])
+- **URL**: /exercises/user/<user_id>/
 - **Description**: Fetches all exercises created by a specific user.User ID to be input into **URL** (e.g. exercises/user/9) where exercise ID = 9
 - **Required Headers**: N/A
 - **Required Body**: N/A
 
-**Success & Error Examples**
+#### Success & Error Examples
 ![alt text](<docs/R8/Exercise - Fetch exercise by user ID - 200.png>)
 ![alt text](<docs/R8/Exercise - Fetch exercise by user ID - 404 (2).png>)
 
-#### 9. Fetch exercise by user (filter by query paramater e.g. ?body_part=Chest)
+---
+
+### 9. Fetch exercise by user (filter by query paramater e.g. ?body_part=Chest)
 
 - **HTTP VERB**: GET
-- **ROUTE PATH**: @exercises_bp.route("/user/<int:user_id>/filter", methods=["GET"])
-- **URL**: /exercises/user/<int:user_id>/filter
+- **ROUTE PATH**: @exercises_bp.route("/user/<user_id>/filter", methods=["GET"])
+- **URL**: /exercises/user/<user_id>/filter
 - **Description**: Headers and body data is not required. However user has the option to filter response data via "body_part". (e.g. /user/9/filter?body_part=Chest) where USER ID = 9
 - **Required Headers**: *See body*
 - **Required Body**: *See body*
 
-**Success & Error Examples**
+#### Success & Error Examples
 ![alt text](<docs/R8/Exercise - Fetch exercise by user ID + paramater query filter - 200.png>)
 ![alt text](<docs/R8/Exercise - Fetch exercise by user ID + paramater query filter - 400.png>)
 ![alt text](<docs/R8/Exercise - Fetch exercise by user ID + paramater query filter - 404.png>)
 
-#### 10. Create an exercise
+---
+
+### 10. Create an exercise
 
 - **HTTP VERB**: POST
 - **ROUTE PATH**: @exercises_bp.route("/", methods=["POST"])
@@ -465,22 +504,24 @@ exercises_bp = Blueprint("exercises", __name__, url_prefix="/exercises")
 - **Required Headers**: JWT Token
 - **Required Body**: (Required: exercicse_name, body_part) (Optional: description)
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Exercise - Create an exercise - 201.png>)
 ![alt text](<docs/R8/Exercise - Create an exercise - 400.png>)
 ![alt text](<docs/R8/Exercise - Create an exercise - 400 (2).png>)
 
-#### 11. Delete an exercise
+---
+
+### 11. Delete an exercise
 
 - **HTTP VERB**: DELETE
-- **ROUTE PATH**: @exercises_bp.route("/<int:exercise_id>", methods=["DELETE"])
-- **URL**: /exercises/<int:exercise_id>
+- **ROUTE PATH**: @exercises_bp.route("/<exercise_id>", methods=["DELETE"])
+- **URL**: /exercises/<exercise_id>
 - **Description**: Allows the creator of the exercise or an admin to delete an exercise from the database. Can only be deleted if it is not being used in any user routine.
 - **Required Headers**: JWT Token
 - **Required Body**: N/A
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Exercise - Delete an exercise - 200.png>)
 ![alt text](<docs/R8/Exercise - Delete an exercise - 401.png>)
@@ -488,16 +529,18 @@ exercises_bp = Blueprint("exercises", __name__, url_prefix="/exercises")
 ![alt text](<docs/R8/Exercise - Delete an exercise - 404.png>)
 ![alt text](<docs/R8/Exercise - Delete an exercise - 409.png>)
 
-#### 12. Update an exercise
+---
+
+### 12. Update an exercise
 
 - **HTTP VERB**: PUT / PATCH
-- **ROUTE PATH**: @exercises_bp.route("/<int:exercise_id>", methods=["PUT", "PATCH"])
-- **URL**: /exercises/<int:exercise_id>
+- **ROUTE PATH**: @exercises_bp.route("/<exercise_id>", methods=["PUT", "PATCH"])
+- **URL**: /exercises/<exercise_id>
 - **Description**: Allows the creator of the exercise or an admin to update an exercise from the database. Can only be updated if it is not being used in any user routine.
 - **Required Headers**: JWT Token
 - **Required Body**: (Optional: exercise_name, description, body_part)
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Exercise - Update an exercise - 200.png>)
 ![alt text](<docs/R8/Exercise - Update an exercise - 400.png>)
@@ -506,14 +549,31 @@ exercises_bp = Blueprint("exercises", __name__, url_prefix="/exercises")
 ![alt text](<docs/R8/Exercise - Update an exercise - 404.png>)
 ![alt text](<docs/R8/Exercise - Update an exercise - 409.png>)
 
-### Routines Controller
-Note: All Routine Controller URLs include a prefix of "/routines" which is defined in the "routines" flask Blueprint
+---
+
+## Routines Controller
+
+**NOTE**: All Routine Controller URLs include a prefix of "/routines" which is defined in the "routines" flask Blueprint
+
+**NOTE 2**: List of valid "targets" as per below (categories for routines)
 
 ```bash
 routines_bp = Blueprint("routines", __name__, url_prefix="/routines")
 ```
 
-#### 13. Fetch all routines
+```bash
+# Categories for routines
+VALID_TARGET = ("Full-body", "Upper-body", "Lower-body", "Push-workout", "Pull-workout", "Chest", "Shoulders", "Back", "Legs", "Arms", "Core", "Cardio")
+```
+
+```bash
+# Attributes available for routine exercises
+VALID_INPUTS = ("sets", "reps", "weight", "distance_km", "distance_m", "hours", "minutes", "seconds", "note")
+```
+
+---
+
+### 13. Fetch all routines
 
 - **HTTP VERB**: GET
 - **ROUTE PATH**: @routines_bp.route("/", methods=["GET"])
@@ -525,14 +585,16 @@ routines_bp = Blueprint("routines", __name__, url_prefix="/routines")
 - **Required Headers**: (Optional: JWT Token)
 - **Required Body**: N/A
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Routine - Fetch all routines - 200 (admin).png>)
 ![alt text](<docs/R8/Routine - Fetch all routines - 200 (logged in).png>)
 ![alt text](<docs/R8/Routine - Fetch all routines - 200 (not logged in).png>)
 ![alt text](<docs/R8/Routine - Fetch all routines - 404.png>)
 
-#### 14. Fetch all routines (filter by target)
+---
+
+### 14. Fetch all routines (filter by target)
 
 - **HTTP VERB**: GET
 - **ROUTE PATH**: @routines_bp.route("/<target>", methods=["GET"])
@@ -543,17 +605,19 @@ routines_bp = Blueprint("routines", __name__, url_prefix="/routines")
 - **Required Headers**: (Optional: JWT Token)
 - **Required Body**: N/A
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Routine - Fetch all routines (filter by target) - 200.png>)
 ![alt text](<docs/R8/Routine - Fetch all routines (filter by target) - 400.png>)
 ![alt text](<docs/R8/Routine - Fetch all routines (filter by target) - 404.png>)
 
-#### 15. Fetch a routine by ID
+---
+
+### 15. Fetch a routine by ID
 
 - **HTTP VERB**: GET
-- **ROUTE PATH**: @routines_bp.route("/<int:routine_id>", methods=["GET"])
-- **URL**: /routines/<int:routine_id>
+- **ROUTE PATH**: @routines_bp.route("/<routine_id>", methods=["GET"])
+- **URL**: /routines/<routine_id>
 - **Description**: Allows a user to fetch a routine (restrictions as per below)
   - *Public Routines*:
     - If not logged in = OK
@@ -569,12 +633,14 @@ routines_bp = Blueprint("routines", __name__, url_prefix="/routines")
 - **Required Headers**: (Optional: JWT Token)
 - **Required Body**: N/A
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Routine - Fetch a routine by ID - 200.png>)
 ![alt text](<docs/R8/Routine - Fetch a routine by ID - 403.png>)
 
-#### 16. Fetch all routines (liked)
+---
+
+### 16. Fetch all routines (liked)
 
 - **HTTP VERB**: GET
 - **ROUTE PATH**: @routines_bp.route("/liked", methods=["GET"])
@@ -583,12 +649,14 @@ routines_bp = Blueprint("routines", __name__, url_prefix="/routines")
 - **Required Headers**: JWT Token
 - **Required Body**: N/A
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Routine - Fetch all routines (liked) - 200.png>)
 ![alt text](<docs/R8/Routine - Fetch all routines (liked) - 404.png>)
 
-#### 17. Create a new routine
+---
+
+### 17. Create a new routine
 
 - **HTTP VERB**: POST
 - **ROUTE PATH**: @routines_bp.route("/", methods=["POST"])
@@ -597,64 +665,72 @@ routines_bp = Blueprint("routines", __name__, url_prefix="/routines")
 - **Required Headers**: JWT Token
 - **Required Body**: routine_title, target (optional: description, public)
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Routine - Create a new routine - 201.png>)
 ![alt text](<docs/R8/Routine - Create a new routine - 201 (public-false).png>)
 ![alt text](<docs/R8/Routine - Create a new routine - 400.png>)
 
-#### 18. Update a routine
+---
+
+### 18. Update a routine
 
 - **HTTP VERB**: PUT / PATCH
-- **ROUTE PATH**: @routines_bp.route("/<int:routine_id>", methods=["PUT", "PATCH"])
-- **URL**: /routines/<int:routine_id>
+- **ROUTE PATH**: @routines_bp.route("/<routine_id>", methods=["PUT", "PATCH"])
+- **URL**: /routines/<routine_id>
 - **Description**: Allows an owner of a routine or an admin to update details of a specific routine.
   - NOTE: If a routine is being changed from public to 'private', all likes associated with the routine will be deleted.
   - This is to ensure that users who have liked the routine (other than the creator) will no longer be able to view the routine.
 - **Required Headers**: JWT Token
 - **Required Body**: (Optional: routine_title, description, target, public)
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Routine - Update a routine - 200.png>)
 ![alt text](<docs/R8/Routine - Update a routine - 403.png>)
 
-#### 19. Delete a routine
+---
+
+### 19. Delete a routine
 
 - **HTTP VERB**: DELETE
-- **ROUTE PATH**: @routines_bp.route("/<int:routine_id>", methods=["DELETE"])
-- **URL**: /routines/<int:routine_id>
+- **ROUTE PATH**: @routines_bp.route("/<routine_id>", methods=["DELETE"])
+- **URL**: /routines/<routine_id>
 - **Description**: Allows an owner of a routine or an admin to delete a specific routine.
 - **Required Headers**: JWT Token
 - **Required Body**: N/A
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Routine - Delete a routine - 200.png>)
 ![alt text](<docs/R8/Routine - Delete a routine - 403.png>)
 
-#### 20. Add an exercise to a routine
+---
+
+### 20. Add an exercise to a routine
 
 - **HTTP VERB**: POST
-- **ROUTE PATH**: @routines_bp.route("/<int:routine_id>/exercise", methods=["POST"])
-- **URL**: /routines/<int:routine_id>/exercise
+- **ROUTE PATH**: @routines_bp.route("/<routine_id>/exercise", methods=["POST"])
+- **URL**: /routines/<routine_id>/exercise
 - **Description**: Allows a user to add an exercise to their routine with various attributes. Routine ID required in URL
   - Attributes include ("sets", "reps", "weight", "distance_km", "distance_m", "hours", "minutes", "seconds", "note")
 - **Required Headers**: JWT Token
 - **Required Body**: exercise_id (At least one of: "sets", "reps", "weight", "distance_km", "distance_m", "hours", "minutes", "seconds", "note")
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Routine - Add an exercise to a routine - 201.png>)
 ![alt text](<docs/R8/Routine - Add an exercise to a routine - 400.png>)
 ![alt text](<docs/R8/Routine - Add an exercise to a routine - 403.png>)
 ![alt text](<docs/R8/Routine - Add an exercise to a routine - 404.png>)
 
-#### 21. Fetch an exercise associated to a routine
+---
+
+### 21. Fetch a routine exercise associated to a routine
 
 - **HTTP VERB**: GET
-- **ROUTE PATH**: @routines_bp.route("/<int:routine_id>/exercise/<int:routine_exercise_id>", methods=["GET"])
-- **URL**: /routines/<int:routine_id>/exercise/<int:routine_exercise_id>
+- **ROUTE PATH**: @routines_bp.route("/<routine_id>/exercise/<routine_exercise_id>", methods=["GET"])
+- **URL**: /routines/<routine_id>/exercise/<routine_exercise_id>
 - **Description**: Allows a user to fetch a specific exercise associated with a routine **(restrictions apply)**:
   - *Exercise within Public Routines*:
     - If not logged in = **OK**
@@ -670,81 +746,96 @@ routines_bp = Blueprint("routines", __name__, url_prefix="/routines")
 - **Required Headers**: (Optional: JWT Token)
 - **Required Body**: N/A
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Routine - Fetch an exercise associated to a routine - 200.png>)
 ![alt text](<docs/R8/Routine - Fetch an exercise associated to a routine - 401.png>)
 ![alt text](<docs/R8/Routine - Fetch an exercise associated to a routine - 403.png>)
 ![alt text](<docs/R8/Routine - Fetch an exercise associated to a routine - 404.png>)
 
-#### 22. Update an exercise associated to a routine
+---
+
+### 22. Update a routine exercise associated to a routine
 
 - **HTTP VERB**: PUT / PATCH
-- **ROUTE PATH**: @routines_bp.route("/<int:routine_id>/exercise/<int:routine_exercise_id>", methods=["PUT", "PATCH"])
-- **URL**: /routines/<int:routine_id>/exercise/<int:routine_exercise_id>
+- **ROUTE PATH**: @routines_bp.route("/<routine_id>/exercise/<routine_exercise_id>", methods=["PUT", "PATCH"])
+- **URL**: /routines/<routine_id>/exercise/<routine_exercise_id>
 - **Description**: Allows the creator of the routine or an admin to update an exercise within a routine. Routine and an associated routine_exercise ID is required in URL
 - **Required Headers**: JWT Token
 - **Required Body**: (Optional: exercise_id, sets, reps, weight, distance_km, distance_m, hours, minutes, seconds, note)
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Routine - Update an exercise associated to a routine - 200 (2).png>)
 ![alt text](<docs/R8/Routine - Update an exercise associated to a routine - 401.png>)
 ![alt text](<docs/R8/Routine - Update an exercise associated to a routine - 403.png>)
 ![alt text](<docs/R8/Routine - Update an exercise associated to a routine - 404.png>)
 
-#### 23. Delete an exercise associated to a routine
+---
+
+### 23. Delete a routine exercise associated to a routine
 
 - **HTTP VERB**: DELETE
-- **ROUTE PATH**: @routines_bp.route("/<int:routine_id>/exercise/<int:routine_exercise_id>", methods=["DELETE"])
-- **URL**: /routines/<int:routine_id>/exercise/<int:routine_exercise_id>
+- **ROUTE PATH**: @routines_bp.route("/<routine_id>/exercise/<routine_exercise_id>", methods=["DELETE"])
+- **URL**: /routines/<routine_id>/exercise/<routine_exercise_id>
 - **Description**: Allows the creator of the routine or an admin to delete a routine_exercise within a routine. Body data is not required, however routine ID and routine exercise ID are required in the URL
 - **Required Headers**: JWT Token
 - **Required Body**: N/A
 
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Routine - Delete an exercise associated to a routine - 200.png>)
 ![alt text](<docs/R8/Routine - Delete an exercise associated to a routine - 401.png>)
 ![alt text](<docs/R8/Routine - Delete an exercise associated to a routine - 403.png>)
 ![alt text](<docs/R8/Routine - Delete an exercise associated to a routine - 404.png>)
 
-#### 24. Like a routine
+---
+
+### 24. Like a routine
 
 - **HTTP VERB**: POST
-- **ROUTE PATH**: @routines_bp.route("/<int:routine_id>/like", methods=["POST"])
-- **URL**: /routines/<int:routine_id>/like
+- **ROUTE PATH**: @routines_bp.route("/<routine_id>/like", methods=["POST"])
+- **URL**: /routines/<routine_id>/like
 - **Description**: Allows a logged in user to like a routine. Can only like a specific routine ONCE
 - **Required Headers**: JWT Token
 - **Required Body**: N/A
 
-**Success & Error Examples**
-
-#### 25. Unlike a routine
-
-- **HTTP VERB**: DELETE
-- **ROUTE PATH**: @routines_bp.route("/<int:routine_id>/like", methods=["DELETE"])
-- **URL**: /routines/<int:routine_id>/like
-- **Description**: Allows a logged in user to unlike a routine. Can only unlike the routine if the routine is currently liked by the logged in user.
-- **Required Headers**: JWT Token
-- **Required Body**: N/A
-
-**Success & Error Examples**
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Routine - Like a routine - 201.png>)
 ![alt text](<docs/R8/Routine - Like a routine - 400.png>)
 ![alt text](<docs/R8/Routine - Like a routine - 404.png>)
 
-#### 26. Copy another user's routine
+---
 
-- **HTTP VERB**: POST
-- **ROUTE PATH**: @routines_bp.route("/<int:routine_id>/copy", methods=["POST"])
-- **URL**: /routines/<int:routine_id>/copy
-- **Description**: Allows a logged in user to copy any PUBLIC routine as a private version of their own. The copy will add a suffix at the end of the newly created routine title advising the routine was copied from "creator's username".
+### 25. Unlike a routine
+
+- **HTTP VERB**: DELETE
+- **ROUTE PATH**: @routines_bp.route("/<routine_id>/like", methods=["DELETE"])
+- **URL**: /routines/<routine_id>/like
+- **Description**: Allows a logged in user to unlike a routine. Can only unlike the routine if the routine is currently liked by the logged in user.
 - **Required Headers**: JWT Token
 - **Required Body**: N/A
 
-**Success & Error Examples**
+#### Success & Error Examples
+
+![alt text](<docs/R8/Routine - Unlike a routine - 200.png>)
+![alt text](<docs/R8/Routine - Unlike a routine - 400.png>)
+![alt text](<docs/R8/Routine - Unlike a routine - 404.png>)
+
+---
+
+### 26. Copy another user's routine
+
+- **HTTP VERB**: POST
+- **ROUTE PATH**: @routines_bp.route("/<routine_id>/copy", methods=["POST"])
+- **URL**: /routines/<routine_id>/copy
+- **Description**: Allows a logged in user to copy any PUBLIC routine as a private version of their own. The copy will add a suffix at the end of the newly created routine title advising the routine was copied from "creator's username".
+  - **NOTE**: A user **CAN** duplicate their own routine.
+- **Required Headers**: JWT Token
+- **Required Body**: N/A
+
+#### Success & Error Examples
 
 ![alt text](<docs/R8/Routine - Copy a routine - 201.png>)
 ![alt text](<docs/R8/Routine - Copy a routine - 401.png>)
