@@ -172,12 +172,14 @@ def update_user():
         return {"error": "An unexpected error occured. "}
 
     
-# /auth/users/<int:user_id> - DELETE - Delete user. UPON REQUEST
+# /auth/users/<int:user_id> - DELETE - Delete user
 @auth_bp.route("/users/<int:user_id>", methods=["DELETE"])
 @jwt_required() # Check if the user has a valid JWT token in the header of their request
 @auth_as_admin_or_owner # Validates if user_id in URL exists and if logged in user is admin or owner of resource
 def delete_user(user_id):
-    '''database will keep any public routines but delete private ones (default = delete all). Will also keep any exercises created by user by transferring ownership. This will keep data integrity and also allow users to still have access to these public routines
+    '''UPON REQUEST: database will keep any public routines but delete private ones (default = delete all).
+    Will also keep any exercises created by user by transferring ownership.
+    This will keep data integrity and also allow users to still have access to these public routines
     '''
     # Grab data from body of JSON request (provide empty dictionary if body is empty)
     body_data = request.get_json(silent = True) or {}

@@ -42,7 +42,29 @@ The [PEP8 Style Guide](https://peps.python.org/pep-0008/) for Python Code (writt
 
 A snippet of code from the 'Delete User' route has been provided below which incorporates both PEP 8 and PEP 257 for longer descriptive type comments.
 
-![PEP_8_Style_Example](./docs/PEP8Style.png)
+```bash
+# /auth/users/<int:user_id> - DELETE - Delete user
+@auth_bp.route("/users/<int:user_id>", methods=["DELETE"])
+@jwt_required() # Check if the user has a valid JWT token
+@auth_as_admin_or_owner # Validates if user_id in URL exists and if logged in user is admin or owner of resource
+def delete_user(user_id):
+    '''UPON REQUEST: database will keep any public routines but 
+    delete private ones (default = delete all). 
+    Will also keep any exercises created by user by transferring ownership.
+    This will keep data integrity and also allow users to still have access
+    to these public routines
+    '''
+    # Grab data from body of JSON request (provide empty dictionary if body is empty)
+    body_data = request.get_json(silent = True) or {}
+
+    # Grab "delete_public_routines" from data (default to True if not provided)
+    delete_public_routines = body_data.get("delete_public_routines", True)
+
+    # Validate if user input is either boolean (true or false)
+    if not isinstance(delete_public_routines, bool):
+        # If not boolean, submit an error
+        return {"error": "Invalid input for 'delete_public_routines'. Please input true or false."}, 400
+```
 
 ## R1 - Explain the problem that this app will solve and how this app addresses the problem
 
@@ -67,7 +89,7 @@ The 'Workout Together Planner' API is an application which promotes the health a
 The application allows users to create accounts and follows a social media platform feel. Although the API is still in its earlier stages, the current features allow users to:
 
 - Create accounts
-- Create exercises (e.g. Bench Press, Squats, Deadlifts, or even Tony's Crazy Leg Stretch Thingy Mabob?!)
+- Create exercises (e.g. Bench Press, Squats, Deadlifts, or even *Tony's Crazy Leg Stretch Thingy Mabob?!*)
 - Create routines that can be viewed by other (if the user chooses to make the routine public)
 - Add, remove and update exercises to their routines
   - Each exercise that is added can contain various characteristics such as sets, reps, weight, duration, etc.
@@ -83,6 +105,7 @@ The ultimate premise of this API is to address the detering factors of social su
 ### Trello
 
 The creation of this API was conducted in parallel with the usage of Trello. Below are the main components ideas, and features of Trello that were utilised for task allocation and tracking purposes:
+
 Tasks were separated into 2x main groups:
 
 - Documentation
@@ -96,9 +119,21 @@ Each group was separated into futher categories/lists to allow the tracking of p
 
 Given the above structure, the creation of 'cards' could be implemented. Each card contained various small-medium sized tasks which needed to be completed to finalise the project as a whole. I decided to breakdown the tasks for documentation as per the requirements in the assignment (R1 - R8).  Each requirement was then broken down into smaller tasks, which made the completion of the assignment more manageable. On the category of code related cards, each card generally represented the completion of a model or a controller within the API. Each of these would then include smaller tasks such as creating a new route, completing a new feature, code refactoring, testing and reviewing. These smaller tasks were generally input as individual items in the checklist section of a requirement or code task. Dates for the completion of each card was also utilised to create a time plan for completion of each task, with the aim to be able to finalise and submit the assignment by the due date.
 
-A link to a copy of the entire Trello Workspace can be found here: [https://trello.com/invite/b/66e1965df452f51f32ff2c94/ATTIb2433d8920ee741ceeda4fd0d9165de4C168FA8E/t2a2-api-webserver](https://trello.com/invite/b/66e1965df452f51f32ff2c94/ATTIb2433d8920ee741ceeda4fd0d9165de4C168FA8E/t2a2-api-webserver)
+A link to a copy of the entire Trello Workspace can be found here:  
+[https://trello.com/invite/b/66e1965df452f51f32ff2c94/ATTIb2433d8920ee741ceeda4fd0d9165de4C168FA8E/t2a2-api-webserver](https://trello.com/invite/b/66e1965df452f51f32ff2c94/ATTIb2433d8920ee741ceeda4fd0d9165de4C168FA8E/t2a2-api-webserver)
 
 ### GitHub / Git
+
+---
+
+**NOTE**: Due to unforseen circumstances, the GitHub repository was required to be duplicated. However the legacy commits were not migrated.
+
+The remote git repositories which are hosted on GitHub can be found using the links below:
+
+Legacy Repository: [https://github.com/hendricwidjaja/T2A2-Webserver-API](https://github.com/hendricwidjaja/T2A2-Webserver-API)  
+Final Repository: [https://github.com/hendricwidjaja/T2A2WebServerAPI](https://github.com/hendricwidjaja/T2A2WebServerAPI)
+
+---
 
 GitHub and Git were also used extensively throughout the creation of this API to date. As a source control tool (Git) which can be shared on the cloud via remote repositories (GitHub), any user can easily manage and track changes, 'save' various versions and even revert back to previous versions if need be. The main useful tools which were applied for the creation of this API include:
 
@@ -139,8 +174,6 @@ git pull / git merge
 ```
 
 Although there were other useful features which were used within Git and GitHub such as the creation of **.gitignore** files, the above git commands form the basis of the main features used for source control and tracking changes to the project.
-
-The remote git repository which is hosted in GitHub can be found using the link here: [https://github.com/hendricwidjaja/T2A2-Webserver-API](https://github.com/hendricwidjaja/T2A2-Webserver-API)
 
 ## R3 - 3rd Party Services, Packages & Dependencies
 
@@ -214,7 +247,7 @@ pw_hash = bcrypt.generate_password_hash(password) # Hashing passwords
 bcrypt.check_password_hash(pw_hash, candidate) # Checking passwords
 ```
 
-### An example of password hashing
+#### An example of password hashing
 
 ```bash
 # Hash the password using bcrypt
@@ -228,7 +261,7 @@ db.session.commit()
 return user_schema.dump(user), 201
 ```
 
-### An example of password checking
+#### An example of password checking
 
 ```bash
 # If the user exists and the password is correct
@@ -247,12 +280,17 @@ This package can be imported via:
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 ```
 
-- create_access_token:
-  - creates an access token for a user, usually provided to the user in the header of a HTTP response when a user logs in
-- jwt_required:
-  - a decorator which can wrap a function to either allow or deny access, based on if a user is logged in or not
-- get_jwt_identity:
-  - a function which allows an application to easily retrieve the logged in user's ID, providing a quick form of identification
+create_access_token:
+
+- creates an access token for a user, usually provided to the user in the header of a HTTP response when a user logs in
+
+jwt_required:
+
+- a decorator which can wrap a function to either allow or deny access, based on if a user is logged in or not
+
+get_jwt_identity:
+
+- a function which allows an application to easily retrieve the logged in user's ID, providing a quick form of identification
 
 ---
 
@@ -293,7 +331,7 @@ class RoutineExercise(db.Model):
     routine = db.relationship("Routine", back_populates="routine_exercises")
 ```
 
-Examples of sessions
+#### Examples of sessions
 
 ```bash
 db.session.scalars(stmt).all() # Creating sessions (fetched data from database)
@@ -343,6 +381,7 @@ Enter here
 Enter here
 
 ## R8 - API Endpoints Tutorial & Explanation
+
 This section contains all end points/routes within each controller for the main API. Each route will contain **at least** one example of a return on success and return on failure example. These will include:
 
 ### Successful Responses
