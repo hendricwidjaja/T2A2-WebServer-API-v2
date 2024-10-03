@@ -179,7 +179,7 @@ def liked_routines():
         return routines_schema.dump(liked_routines), 200
     
     # Else, if user hasn't liked any posts yet
-    return {"message": "You haven't liked any routines yet."}, 405
+    return {"message": "You haven't liked any routines yet."}, 404
 
 # /routines/<int:routine_id>/copy - POST - Copy another user's routine as personal private routine
 @routines_bp.route("/<int:routine_id>/copy", methods=["POST"])

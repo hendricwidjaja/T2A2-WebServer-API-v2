@@ -33,10 +33,10 @@ The [PEP8 Style Guide](https://peps.python.org/pep-0008/) for Python Code (writt
 - Consistency of 1x blank where necessary to break up code blocks
 - Consistency of double quotes for all strings (if possible)
 - Ensure use of white-space characters are consistent and avoided:
-    - immediately inside parentheses, brackets or braces
-    - between trailing commas,
-    - before commas, semicolon or colon
-    - immediately before open parenthesis
+  - immediately inside parentheses, brackets or braces
+  - between trailing commas,
+  - before commas, semicolon or colon
+  - immediately before open parenthesis
 - Descriptive variable names
 
 A snippet of code from the 'Delete User' route has been provided below which incorporates both PEP 8 and PEP 257 for longer descriptive type comments.
@@ -53,9 +53,9 @@ With health being one of the most important factors of life itself, its importan
 - accountability and commitment
 - Cost of activities & facilities
 
-A study in 2021 ran a specific study which measured the effect of providing social reward and support for a group of runners. The study proved that associating a positive experience with exercise leads to higher levels of energy, enjoyment and improved performance (without any additiona perceived effort) (Davis, MacCarron & Cohen 2021). They continued to strongly propose the importance and influence of social engagement and the feeling of belonging for individuals to foster deeper connections that can lead to better psychological, physical and social well being.
+A study in 2021 ran a specific study which measured the effect of providing social reward and support for a group of runners. The study proved that associating a positive experience with exercise leads to higher levels of energy, enjoyment and improved performance (without any additiona perceived effort) ([Davis, MacCarron & Cohen 2021](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8443045/)). They continued to strongly propose the importance and influence of social engagement and the feeling of belonging for individuals to foster deeper connections that can lead to better psychological, physical and social well being.
 
-Accountability partners has been a term that has been thrown around in the last couple of years and for good reason. According to a study conducted in the US, an individual has a 65% success rate for achieving their goals if they share their goal with others. This success rate also goes all the way up to 95% if the individual commits completely and conducts check-ins with a accountability partner. This idea is just as successful when applied specifically to fitness and health goals (Chaudhuri, A 2023).
+Accountability partners has been a term that has been thrown around in the last couple of years and for good reason. According to a study conducted in the US, an individual has a 65% success rate for achieving their goals if they share their goal with others. This success rate also goes all the way up to 95% if the individual commits completely and conducts check-ins with a accountability partner. This idea is just as successful when applied specifically to fitness and health goals ([Chaudhuri, A 2023](https://www.theguardian.com/lifeandstyle/2023/nov/27/the-buddy-boost-how-accountability-partners-make-you-healthy-happy-and-more-successful)).
 
 Other factors such as the cost of activities access to facilities also plays a significant part to the difficulty in committing to a healthy lifestyle. This can be due to the cost of gym memberships, exercise classes, personal trainers and the limitations of certain environments that individuals may experience due to their geographical location.
 
@@ -103,37 +103,37 @@ GitHub and Git were also used extensively throughout the creation of this API to
 
 #### To initialise the repository
 
-```
+```bash
 git init
 ```
 
 #### To add specific (or all) files to a staging area (this allows Git to track files you want to be tracked)
 
-```
+```text
 git add <filename> (OR) git add .
 ```
 
 #### Creates a saved snapshot of the current version of the repository. This version can then be referred to at a later date or even reverted back to if need be
 
-```
+```bash
 git commit -m "<insert meaningful message>" 
 ```
 
 #### To 'push' the commit to the remote repository (which can then be accessed by others)
 
-```
+```bash
 git push
 ```
 
 #### Creating a new branch (creates a copy of the repository where a user can make changes without affecting the "main" branch). Useful for experimentation and testing and working in collaborative environments
 
-```
+```bash
 git branch <new branch name> / git checkout <new branch name> 
 ```
 
 #### Allows a user to merge their branch to the main branch (generally done on GitHub via git pull requests) which allows for better communication, collaboration and review processes before merging branches
 
-```
+```bash
 git pull / git merge 
 ```
 
@@ -143,7 +143,7 @@ The remote git repository which is hosted in GitHub can be found using the link 
 
 ## R3 - 3rd Party Services, Packages & Dependencies
 
-#### PostgreSQL
+### PostgreSQL
 
 PostgreSQL is an object relational database management system which is incorporated into this application for this very purpose. It allows for the storage of data in tables, rows and columns. PostgreSQL contains various features which gives it a long standing history of being ACID compliant. It ensures the atomicity, consistency, integrity and durability of the data it stores. It's robustness and ability to support complicated queries makes it a strong choice for the API. It supports these complexities via its strong feature set of creating:
 
@@ -154,21 +154,21 @@ PostgreSQL is an object relational database management system which is incorpora
 
 Other than the above, the Workout Together Planner API also utilises functions such as rollbacks which PostgreSQL supports. This allows any sessions or transactions to be cancelled in the event of errors that may cause integrity issues.
 
-#### Flask
+### Flask
 
 Flask is largely considered a micro web framework which is ultralight and easy to customise to allow various functionalities that can easily be extended through various libraries. Within this API, Flask allows for the structuring of HTTP routing to specific controllers, allowing the API to then logically fetch, create, delete and update data, before rendering the response back to the user. Flask is a crucial component of this API to handle the various routes and ensures that the right logic is applied to the data and given back to the user. Essentially, flask acts as a central control hub for the view functions and rules that are applied to URLs. Below is an example of several routes within the API that provide various functions/logic (via Blueprints).
 
-```
+```bash
 from flask import Flask
 ```
 
 ![Flask_route_examples](/docs/R3_flask_example.png)
 
-#### Flask-Bcrypt & bcrypt
+### Flask-Bcrypt & bcrypt
 
 Flask-Bcrypt is utilised to manage various verification and authentication features in APIs. It utilises various dependencies which make it possible to seamlessly integrate password hashing and password checking (bcrypt). This feature is a crucial aspect of maintaining the applications security and protection of user data. This helps prevent the sensitive password data of users of an application to be exposed. Examples of the usage of password hashing and checking can be seen under the below bcrypt dependency explanation.
 
-```
+```bash
 from flask_bcrypt import Bcrypt # Importing
 pw_hash = bcrypt.generate_password_hash(password) # Hashing passwords
 bcrypt.check_password_hash(pw_hash, candidate) # Checking passwords
@@ -180,12 +180,12 @@ bcrypt.check_password_hash(pw_hash, candidate) # Checking passwords
 - An example of password hashing
 ![bcrypt_example_2](./docs/R3_bcrypt2.png)
 
-#### Flask-JWT-Extended
+### Flask-JWT-Extended
 
 Flask-JWT-Extended is what allows the JWT (JSON Web Token) functionality within this API. This authentication feature is another widely incorporated package which handles verfication of users and the provision of security tokens, enabling the control of access to data and database functions.
 This package can be imported via:
 
-```
+```bash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 ```
 
@@ -196,7 +196,7 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 - get_jwt_identity:
   - a function which allows an application to easily retrieve the logged in user's ID, providing a quick form of identification
 
-#### FLask_SQLAlchemy
+### FLask_SQLAlchemy
 
 Flask SQLAlchemy is an object relational mapping (ORM) tool which allows for the abstraction of simplification of performing database operations. It does this by 'translating' data within the database into Python objects. The main features which are incorporated in this app are:
 
@@ -207,15 +207,15 @@ Flask SQLAlchemy is an object relational mapping (ORM) tool which allows for the
 An example of this implementation can be seen below for the RoutineExercise model within the API.
 ![SQLAlchemy_Example](/docs/R3_sqlalchemy.png)  
 
-#### Flask-Marshmallow
+### Flask-Marshmallow
 
-#### marshmallow & marshmallow-sqlalchemy
+### marshmallow & marshmallow-sqlalchemy
 
-#### python-dotenv
+### python-dotenv
 
 Python dotenv is utilised in this API to assist with configuring the necessary environment variables. This includes the 'DATABASE URI' and 'JWT' Secret Key particularly in this API. These highly important but extremely vulnerable forms of data are easily abstracted and modularised using python dotenv which allows for the separation of the APIs configuration settings and the logic's application.
 
-#### SQLALchemy
+### SQLALchemy
 
 ## R4 - Benefits & Drawbacks of of Postgresql
 
@@ -225,11 +225,97 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 
 ## R6 - Entity Relationship Diagram
 
-## R7 Explain the implemented models and the relationship, including how the relationships aid database implementation
+## R7 - Explain the implemented models and the relationship, including how the relationships aid database implementation
 
 ## R8 - API Endpoints Tutorial & Explanation
+This section contains all end points/routes within each controller for the main API. Each route will contain **at least** one example of a return on success and return on failure example. These will include:
+
+### Successful Responses
+
+- 200: OK
+  - Typically provided to the user when requested data has been successfully provided back to user
+- 201: Created
+  - Typically provided when new data has been inserted into the database.
+
+### Client Error Reponses
+
+- 400: Bad Request
+  - If the user provides a request which cannot be processed due to an error on the client's side (e.g. incorrect syntax, invalid inputs)
+- 401: Unauthorised
+  - If the user trying to create/view/update/delete data which requires authorisation, but the user cannot be identified.
+- 403: Forbidden
+  - If the user does not have the authorisation to create/view/update/delete the data they have requested.
+- 404: Not found
+  - If user has requested to create/view/update/delete data but the data could not be found
+- 409: Conflict
+  - If user has provided an input which creates conflicting data 
+
+Screenshots from **Insomnia API Client**, which were taken for testing purposes have been included for these example. An example of how to understand each success or error response is as per below:
+
+![alt text](docs/R8/HTTP_reqeust_response_eg.png)
+![alt text](docs/R8/JWT_token_example.png)
+
+*Before the explanation of each end point, a brief explanation for the CLI controllers are also below:*
+
+```bash
+# flask db create
+
+@db_commands.cli.command("create")  
+def create_tables():
+    db.create_all()
+    print("Tables created!")
+```
+
+```bash
+# flask db create
+
+def seed_tables():
+    # Create a list of instances (e.g. of users below)
+    users = [
+        User(
+            username = "Deleted_Account",
+            firstname = "Deleted Account",
+            lastname = "Deleted Account",
+            email = "deleted@email.com",
+            password = bcrypt.generate_password_hash("abc123!").decode("utf-8"),
+            is_admin = True
+        ),
+
+        ...
+
+        ...
+
+            # Add list of user instances to session 
+    db.session.add_all(users)
+
+    '''Addition of other instances for each entity/table 
+    (e.g. exercises, routines, routine_exercises, likes)
+    As per user example
+    '''
+
+    # Commit session to database
+    db.session.commit()
+
+    # Provide acknowledgement that tables have been seeded
+    print("Tables seeded!")
+```
+
+```bash
+# flask db drop
+
+@db_commands.cli.command("drop")
+def drop_tables():
+    # Drop all tables and data from database
+    db.drop_all()
+    print("Tables dropped.")
+```
 
 ### Authentication Controller
+Note: All Authentication Controller URLs include a prefix of "/auth" which is defined in the "auth" flask Blueprint
+
+```bash
+auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
+```
 
 #### 1. Register new user
 
@@ -240,7 +326,8 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: N/A
 - **Required Body**: Email, Username & Password (Optional: firstname, lastname, is_admin)
 
-**Success Example (201) vs Error Examples (400, 401, 403)**
+**Success & Error Examples**
+
 ![Register_new_user_201](./docs/R8/Authentication%20-%20Register%20new%20user%20-%20201.png)
 ![Register_new_user_400](<docs/R8/Authentication - Register new user - 400.png>)
 ![Register_new_user_401](<docs/R8/Authentication - Register new user - 401.png>)
@@ -255,7 +342,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: N/A
 - **Required Body**: Email & Password
 
-**Success Example (200) vs Error Examples (400)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Authentication - User Login - 200.png>)
 ![alt text](<docs/R8/Authentication - User Login - 400.png>)
@@ -269,7 +356,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: JWT Token
 - **Required Body**: (Options: Username, password, firstname, lastname)
 
-**Success Example (201) vs Error Examples (401, 401, 403)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Authentication - User Update Details - 200.png>)
 ![alt text](<docs/R8/Authentication - User Update Details - 400.png>)
@@ -285,7 +372,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
   - To keep public routines on server, type in "delete_public_routines": false
   - To delete both public and private routines on server, leave body empty OR type in "delete_public_routines": true
 
-**Success Example (201) vs Error Examples (401, 401, 403)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Authentication - Delete user - 200.png>)
 ![alt text](<docs/R8/Authentication - Delete user - 400.png>)
@@ -294,6 +381,11 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 ![alt text](<docs/R8/Authentication - Delete user - 404.png>)
 
 ### Exercises Controller
+Note: All Exercise Controller URLs include a prefix of "/exercises" which is defined in the "exercises" flask Blueprint
+
+```bash
+exercises_bp = Blueprint("exercises", __name__, url_prefix="/exercises")
+```
 
 #### 5. Fetch all exercises
 
@@ -304,7 +396,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: N/A
 - **Required Body**: N/A
 
-**Success Example (201) vs Error Examples (401, 401, 403)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Exercise - Fetch all exercises - 200.png>)
 ![alt text](<docs/R8/Exercise - Fetch all exercises - 404.png>)
@@ -318,7 +410,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**:<italic>See description</italic>
 - **Required Body**:*See description*
 
-**Success Example (201) vs Error Examples (401, 401, 403)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Exercise - Fetch all exercises (specific body_part) - 200.png>)
 ![alt text](<docs/R8/Exercise - Fetch all exercises (specific body_part) - 404.png>)
@@ -332,7 +424,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: N/A
 - **Required Body**: N/A
 
-**Success Example (201) vs Error Examples (401, 401, 403)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Exercise - Fetch exercise by ID - 200.png>)
 ![alt text](<docs/R8/Exercise - Fetch exercise by ID - 404.png>)
@@ -346,8 +438,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: N/A
 - **Required Body**: N/A
 
-**Success Example (201) vs Error Examples (401, 401, 403)**
-
+**Success & Error Examples**
 ![alt text](<docs/R8/Exercise - Fetch exercise by user ID - 200.png>)
 ![alt text](<docs/R8/Exercise - Fetch exercise by user ID - 404 (2).png>)
 
@@ -360,8 +451,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: *See body*
 - **Required Body**: *See body*
 
-**Success Example (201) vs Error Examples (401, 401, 403)**
-
+**Success & Error Examples**
 ![alt text](<docs/R8/Exercise - Fetch exercise by user ID + paramater query filter - 200.png>)
 ![alt text](<docs/R8/Exercise - Fetch exercise by user ID + paramater query filter - 400.png>)
 ![alt text](<docs/R8/Exercise - Fetch exercise by user ID + paramater query filter - 404.png>)
@@ -375,7 +465,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: JWT Token
 - **Required Body**: (Required: exercicse_name, body_part) (Optional: description)
 
-**Success Example (201) vs Error Examples (401, 401, 403)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Exercise - Create an exercise - 201.png>)
 ![alt text](<docs/R8/Exercise - Create an exercise - 400.png>)
@@ -390,7 +480,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: JWT Token
 - **Required Body**: N/A
 
-**Success Example (201) vs Error Examples (401, 401, 403)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Exercise - Delete an exercise - 200.png>)
 ![alt text](<docs/R8/Exercise - Delete an exercise - 401.png>)
@@ -407,7 +497,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: JWT Token
 - **Required Body**: (Optional: exercise_name, description, body_part)
 
-**Success Example (201) vs Error Examples (401, 401, 403)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Exercise - Update an exercise - 200.png>)
 ![alt text](<docs/R8/Exercise - Update an exercise - 400.png>)
@@ -417,6 +507,11 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 ![alt text](<docs/R8/Exercise - Update an exercise - 409.png>)
 
 ### Routines Controller
+Note: All Routine Controller URLs include a prefix of "/routines" which is defined in the "routines" flask Blueprint
+
+```bash
+routines_bp = Blueprint("routines", __name__, url_prefix="/routines")
+```
 
 #### 13. Fetch all routines
 
@@ -430,7 +525,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: (Optional: JWT Token)
 - **Required Body**: N/A
 
-**Success Example (201) vs Error Examples (401, 401, 403)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Routine - Fetch all routines - 200 (admin).png>)
 ![alt text](<docs/R8/Routine - Fetch all routines - 200 (logged in).png>)
@@ -448,7 +543,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: (Optional: JWT Token)
 - **Required Body**: N/A
 
-**Success Example (201) vs Error Examples (401, 401, 403)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Routine - Fetch all routines (filter by target) - 200.png>)
 ![alt text](<docs/R8/Routine - Fetch all routines (filter by target) - 400.png>)
@@ -474,7 +569,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: (Optional: JWT Token)
 - **Required Body**: N/A
 
-**Success Example (201) vs Error Examples (401, 401, 403)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Routine - Fetch a routine by ID - 200.png>)
 ![alt text](<docs/R8/Routine - Fetch a routine by ID - 403.png>)
@@ -488,7 +583,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: JWT Token
 - **Required Body**: N/A
 
-**Success Example (201) vs Error Examples (401, 401, 405)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Routine - Fetch all routines (liked) - 200.png>)
 ![alt text](<docs/R8/Routine - Fetch all routines (liked) - 405.png>)
@@ -502,7 +597,8 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: JWT Token
 - **Required Body**: routine_title, target (optional: description, public)
 
-**Success Example (201) vs Error Examples (401, 401, 403)**
+**Success & Error Examples**
+
 ![alt text](<docs/R8/Routine - Create a new routine - 201.png>)
 ![alt text](<docs/R8/Routine - Create a new routine - 201 (public-false).png>)
 ![alt text](<docs/R8/Routine - Create a new routine - 400.png>)
@@ -518,7 +614,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: JWT Token
 - **Required Body**: (Optional: routine_title, description, target, public)
 
-**Success Example (201) vs Error Examples (401, 401, 403)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Routine - Update a routine - 200.png>)
 ![alt text](<docs/R8/Routine - Update a routine - 403.png>)
@@ -532,7 +628,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: JWT Token
 - **Required Body**: N/A
 
-**Success Example (200) vs Error Examples (403)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Routine - Delete a routine - 200.png>)
 ![alt text](<docs/R8/Routine - Delete a routine - 403.png>)
@@ -547,7 +643,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: JWT Token
 - **Required Body**: exercise_id (At least one of: "sets", "reps", "weight", "distance_km", "distance_m", "hours", "minutes", "seconds", "note")
 
-**Success Example (201) vs Error Examples (400, 403, 404)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Routine - Add an exercise to a routine - 201.png>)
 ![alt text](<docs/R8/Routine - Add an exercise to a routine - 400.png>)
@@ -574,7 +670,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: (Optional: JWT Token)
 - **Required Body**: N/A
 
-**Success Example (201) vs Error Examples (401, 401, 403)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Routine - Fetch an exercise associated to a routine - 200.png>)
 ![alt text](<docs/R8/Routine - Fetch an exercise associated to a routine - 401.png>)
@@ -590,7 +686,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: JWT Token
 - **Required Body**: (Optional: exercise_id, sets, reps, weight, distance_km, distance_m, hours, minutes, seconds, note)
 
-**Success Example (201) vs Error Examples (401, 403, 404)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Routine - Update an exercise associated to a routine - 200 (2).png>)
 ![alt text](<docs/R8/Routine - Update an exercise associated to a routine - 401.png>)
@@ -606,7 +702,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: JWT Token
 - **Required Body**: N/A
 
-**Success Example (201) vs Error Examples (401, 401, 403)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Routine - Delete an exercise associated to a routine - 200.png>)
 ![alt text](<docs/R8/Routine - Delete an exercise associated to a routine - 401.png>)
@@ -622,7 +718,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: JWT Token
 - **Required Body**: N/A
 
-**Success Example (201) vs Error Examples (401, 401, 403)**
+**Success & Error Examples**
 
 #### 25. Unlike a routine
 
@@ -633,7 +729,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: JWT Token
 - **Required Body**: N/A
 
-**Success Example (201) vs Error Examples (400, 404)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Routine - Like a routine - 201.png>)
 ![alt text](<docs/R8/Routine - Like a routine - 400.png>)
@@ -648,7 +744,7 @@ PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Objec
 - **Required Headers**: JWT Token
 - **Required Body**: N/A
 
-**Success Example (201) vs Error Examples (401, 401, 403)**
+**Success & Error Examples**
 
 ![alt text](<docs/R8/Routine - Copy a routine - 201.png>)
 ![alt text](<docs/R8/Routine - Copy a routine - 401.png>)
