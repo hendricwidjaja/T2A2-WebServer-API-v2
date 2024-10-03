@@ -34,8 +34,12 @@ DELETED_ACCOUNT_ID = 1
 
 # /auth/register - REGISTER NEW USER (User MUST provide email, username and password (Optional: firstname, lastname, is_admin[default=False]))
 @auth_bp.route("/register", methods=["POST"])
-@jwt_required(optional=True) # User can optionally be logged in to access route (allows admin to create another admin)
+@jwt_required(optional=True)
 def register_user():
+    '''(User MUST provide email, username and password (Optional: firstname, lastname, is_admin[default=False]))
+    User can optionally be logged in to access route (allows admin to create another admin)
+    '''
+
     # Get the data from the body of the request
     body_data = UserSchema().load(request.get_json())
 
