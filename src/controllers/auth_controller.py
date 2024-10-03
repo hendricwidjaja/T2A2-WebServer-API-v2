@@ -16,17 +16,19 @@ from sqlalchemy.exc import IntegrityError
 from psycopg2 import errorcodes
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
-# Import from utils.py:
-# auth_as_admin_or_owner: decorator which checks if logged in user has authorisation to access the decorated route
-# ADMIN_EMAIL: used for abstracting admin email
+'''Import from utils.py:
+auth_as_admin_or_owner: decorator which checks if logged in user has authorisation to access the decorated route
+ADMIN_EMAIL: used for abstracting admin email
+'''
 from utils import auth_as_admin_or_owner, ADMIN_EMAIL
 
 # Create blueprint named "auth". Also decorate with url_prefix for management of routes.
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
-# Identifies that the deleted account is account with ID = 1
-# When a user deletes their account, they can choose to either leave their public routines on the server for others to continue using/viewing, or they can be deleted entirely.
-# If the user decides to keep them on the server, their public routines will be transferred and 'owned' by the deleted account (prior to removing the user from the database)
+'''Identifies that the deleted account is account with ID = 1
+When a user deletes their account, they can choose to either leave their public routines on the server for others to continue using/viewing, or they can be deleted entirely.
+If the user decides to keep them on the server, their public routines will be transferred and 'owned' by the deleted account (prior to removing the user from the database)
+'''
 DELETED_ACCOUNT_ID = 1
 
 
@@ -137,8 +139,9 @@ def update_user():
         # If the user inserts a new passowrd, store the new password in a variable named "password" 
         password = body_data.get("password")
 
-        # fetch the user from the database by extracting the user's identity from the JWT token they passed in the header and finding the user ID it matches to in the database 
-        # SELECT * FROM user WHERE id = get_jwt_identity
+        '''fetch the user from the database by extracting the user's identity from the JWT token they passed in the header and finding the user ID it matches to in the database, 
+        SELECT * FROM user WHERE id = get_jwt_identity
+        '''
         stmt = db.select(User).filter_by(id=get_jwt_identity())
         user = db.session.scalar(stmt)
 
@@ -165,20 +168,22 @@ def update_user():
         return {"error": "An unexpected error occured. "}
 
     
-# /auth/users/<int:user_id> - DELETE - Delete user. UPON REQUEST, database will keep any public routines but delete private ones (default = delete all). Will also keep any exercises created by user by transferring ownership. This will keep data integrity and also allow users to still have access to these public routines
+# /auth/users/<int:user_id> - DELETE - Delete user. UPON REQUEST
 @auth_bp.route("/users/<int:user_id>", methods=["DELETE"])
 @jwt_required() # Check if the user has a valid JWT token in the header of their request
 @auth_as_admin_or_owner # Validates if user_id in URL exists and if logged in user is admin or owner of resource
 def delete_user(user_id):
+    '''database will keep any public routines but delete private ones (default = delete all). Will also keep any exercises created by user by transferring ownership. This will keep data integrity and also allow users to still have access to these public routines
+    '''
     # Grab data from body of JSON request (provide empty dictionary if body is empty)
-    body_data = request.get_json(silent=True) or {}
+    body_data = request.get_json(silent = True) or {}
 
     # Grab "delete_public_routines" from data (default to True if not provided)
     delete_public_routines = body_data.get("delete_public_routines", True)
 
     # Validate if user input is either boolean (true or false)
     if not isinstance(delete_public_routines, bool):
-        # if not boolean, submit an error
+        # If not boolean, submit an error
         return {"error": "Invalid input for 'delete_public_routines'. Please input true or false."}, 400
     
     # Create variable for better acknowledgement message regarding user's public routines
@@ -187,27 +192,28 @@ def delete_user(user_id):
         decision = "kept"
     
     # Find & select user in database
-    stmt = db.select(User).filter_by(id=user_id)
+    stmt = db.select(User).filter_by(id = user_id)
     user = db.session.scalar(stmt)
 
     # If user wants to leave their public routines on the database
     if not delete_public_routines:
         # Select all routines which are created by the user and public
-        stmt = db.select(Routine).filter_by(user_id=user_id, public=True)
+        stmt = db.select(Routine).filter_by(user_id = user_id, public = True)
         user_public_routines = db.session.scalars(stmt)
         # For each of these routines, transfer user_id to DELETED_ACCOUNT_ID
         for routine in user_public_routines:
             routine.user_id = DELETED_ACCOUNT_ID
 
     # Select all/remainder user routines
-    stmt = db.select(Routine).filter_by(user_id=user_id)
+    stmt = db.select(Routine).filter_by(user_id = user_id)
     remaining_routines = db.session.scalars(stmt).all()
 
+    # For each routine selected, delete from database
     for routine in remaining_routines:
         db.session.delete(routine)
 
     # Transfer ownership of any user created exercises to the "DELETED_ACCOUNT" user_id
-    stmt = db.select(Exercise).filter_by(user_id=user_id)
+    stmt = db.select(Exercise).filter_by(user_id = user_id)
     user_exercises = db.session.scalars(stmt).all()
 
     for exercise in user_exercises:
