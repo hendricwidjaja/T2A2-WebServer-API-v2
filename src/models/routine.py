@@ -8,7 +8,8 @@ from sqlalchemy import func
 from marshmallow import fields, validates
 from marshmallow.validate import OneOf, Length
 
-# Constant variable for valid "target" muscle groups to be trained to allow for easier tracking and updating of valid "targets"
+'''Constant variable for valid "target" muscle groups to be trained to allow for easier tracking and updating of valid "targets"
+'''
 VALID_TARGET = ("Full-body", "Upper-body", "Lower-body", "Push-workout", "Pull-workout", "Chest", "Shoulders", "Back", "Legs", "Arms", "Core", "Cardio")
 
 # Table for Routine Model
@@ -27,8 +28,10 @@ class Routine(db.Model):
     # Foreign Keys
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
+
     # Define relationships with user, routine exercises and likes table. Delete all associated routine exercises and likes when routine is deleted.
-    # Note: Routine exercises associated with public routines will be kept by transferring ownership to "DELETED ACCOUNT" account if user chooses to not delete public routines when deleting account (see logic for delete user in auth_controller.py)
+    '''Routine exercises associated with public routines will be kept by transferring ownership to "DELETED ACCOUNT" account if user chooses to not delete public routines when deleting account (see logic for delete user in auth_controller.py)
+    '''
     user = db.relationship("User", back_populates="routines")
     routine_exercises = db.relationship("RoutineExercise", back_populates="routine", cascade="all, delete")
     likes = db.relationship("Like", back_populates="routine", cascade="all, delete")
@@ -38,10 +41,11 @@ class Routine(db.Model):
         return len(self.likes)
 
 class RoutineSchema(ma.Schema):
-    # Reason for validation are as per error messages provided. 
-    # Generally ensure user inputs are not too long and any required inputs are provided by user.
-    # Also used for formatting (e.g. timestamp) and allowing nesting of data from other tables (e.g. created_by & routine methods).
-    # Also incorporate fields.Method to call function (get_likes_count) which calculates the amount of likes for a particular routine instance which can then be seen by user when routine is dumped. 
+    '''Reason for validation are as per error messages provided. 
+    Generally ensure user inputs are not too long and any required inputs are provided by user.
+    Also used for formatting (e.g. timestamp) and allowing nesting of data from other tables (e.g. created_by & routine methods).
+    Also incorporate fields.Method to call function (get_likes_count) which calculates the amount of likes for a particular routine instance which can then be seen by user when routine is dumped. 
+    '''
     routine_title = fields.String(validate=Length(max=50), error="Routine title cannot exceed 50 characters.")
     description = fields.String(validate=Length(max=255), error="You have exceeded the 255 character count limit.")
     target = fields.String(validate=OneOf(VALID_TARGET))

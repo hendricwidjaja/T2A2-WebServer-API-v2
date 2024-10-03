@@ -6,16 +6,22 @@ Welcome to the documentation of Hendric Widjaja's - T2A2: API Webserver.
 
 Please use the links below to quickly access key parts of this documentation.
 
-- [Link to source control repository (GitHub)](https://github.com/hendricwidjaja/T2A2-Webserver-API)
-- [R1 - Explain the problem that this app will solve and how this app addresses the problem](#r1---explain-the-problem-that-this-app-will-solve-and-how-this-app-addresses-the-problem)
-- [R2 - Task allocation & Tracking](#r2---task-allocation--tracking-trello--github)
-  - [Link to Trello](https://trello.com/b/2OOqzzxT/t2a2-api-webserver)
-- [R3 - Third-Party Services, Packages & Dependencies](#r3---3rd-party-services-packages--dependencies)
-- [R4 - Benefits & Drawbacks of Postgresql](#r4---benefits--drawbacks-of-of-postgresql)
-- [R5 - Explain the features, purpose & functionalities of the object-relational mapping system (ORM) used in this app](#r5---explain-the-features-purpose-and-functionalities-of-the-orm-system-for-this-app)
-- [R6 - Entity Relationship Diagram](#r6---entity-relationship-diagram)
-- [R7 - Explain the implemeneted models and their relationships, including how the relationships aid database implementation](#r7---explain-the-implemented-models-and-the-relationship-including-how-the-relationships-aid-database-implementation)
-- [R8 - API Endpoints Tutorial & Explanation](#r8---api-endpoints-tutorial--explanation)
+### Project Management & Task Allocation & Tracking
+
+- GitHub (Legacy Repository): [https://github.com/hendricwidjaja/T2A2-Webserver-API](https://github.com/hendricwidjaja/T2A2-Webserver-API)  
+- GitHub (Current Repository): [https://github.com/hendricwidjaja/T2A2WebServerAPI](https://github.com/hendricwidjaja/T2A2WebServerAPI)
+- Trello: [https://trello.com/b/2OOqzzxT/t2a2-api-webserver](https://trello.com/b/2OOqzzxT/t2a2-api-webserver)
+
+### Requirements
+
+- Requirement 1: [The problem and the solution](#r1---explain-the-problem-that-this-app-will-solve-and-how-this-app-addresses-the-problem)
+- Requirement 2: [R2 - Task allocation & Tracking](#r2---task-allocation--tracking-trello--github)
+- Requirement 3: [R3 - Third-Party Services, Packages & Dependencies](#r3---3rd-party-services-packages--dependencies)
+- Requirement 4: [R4 - Benefits & Drawbacks of Postgresql](#r4---benefits--drawbacks-of-of-postgresql)
+- Requirement 5: [R5 - Features, purpose & functionalities of the ORM used in this app](#r5---explain-the-features-purpose-and-functionalities-of-the-orm-system-for-this-app)
+- Requirement 6: [R6 - Entity Relationship Diagram](#r6---entity-relationship-diagram)
+- Requirement 7: [R7 - Models & Relationships and database implementation](#r7---explain-the-implemented-models-and-the-relationship-including-how-the-relationships-aid-database-implementation)
+- Requirement 8: [R8 - API Endpoints Tutorial & Explanation](#r8---api-endpoints-tutorial--explanation)
 
 ## Quick Notes
 
@@ -104,6 +110,9 @@ The ultimate premise of this API is to address the detering factors of social su
 
 ### Trello
 
+A link to a copy of the entire Trello Workspace can be found here:  
+[https://trello.com/invite/b/66e1965df452f51f32ff2c94/ATTIb2433d8920ee741ceeda4fd0d9165de4C168FA8E/t2a2-api-webserver](https://trello.com/invite/b/66e1965df452f51f32ff2c94/ATTIb2433d8920ee741ceeda4fd0d9165de4C168FA8E/t2a2-api-webserver)
+
 The creation of this API was conducted in parallel with the usage of Trello. Below are the main components ideas, and features of Trello that were utilised for task allocation and tracking purposes:
 
 Tasks were separated into 2x main groups:
@@ -117,23 +126,18 @@ Each group was separated into futher categories/lists to allow the tracking of p
 - WIP (Work in progress)
 - Completed
 
-Given the above structure, the creation of 'cards' could be implemented. Each card contained various small-medium sized tasks which needed to be completed to finalise the project as a whole. I decided to breakdown the tasks for documentation as per the requirements in the assignment (R1 - R8).  Each requirement was then broken down into smaller tasks, which made the completion of the assignment more manageable. On the category of code related cards, each card generally represented the completion of a model or a controller within the API. Each of these would then include smaller tasks such as creating a new route, completing a new feature, code refactoring, testing and reviewing. These smaller tasks were generally input as individual items in the checklist section of a requirement or code task. Dates for the completion of each card was also utilised to create a time plan for completion of each task, with the aim to be able to finalise and submit the assignment by the due date.
-
-A link to a copy of the entire Trello Workspace can be found here:  
-[https://trello.com/invite/b/66e1965df452f51f32ff2c94/ATTIb2433d8920ee741ceeda4fd0d9165de4C168FA8E/t2a2-api-webserver](https://trello.com/invite/b/66e1965df452f51f32ff2c94/ATTIb2433d8920ee741ceeda4fd0d9165de4C168FA8E/t2a2-api-webserver)
-
-### GitHub / Git
+Given the above structure, the creation of 'cards' could be implemented. Each card contained various small-medium sized tasks which needed to be completed to finalise the project as a whole. I decided to breakdown the tasks for documentation as per the requirements in the assignment (R1 - R8).  Each requirement was then broken down into smaller tasks, which made the completion of the assignment more manageable. On the category of code related cards, each card generally represented the completion of a model or a controller within the API. Each of these would then include smaller tasks such as creating a new route, completing a new feature, code refactoring, testing and reviewing. These smaller tasks were generally input as individual items in the checklist section of a requirement or code task. Labels were also featured on the code cards for easier distinction between model and controller related cards. Dates for the completion of each card was also utilised to create a time plan for completion of each task, with the aim to be able to finalise and submit the assignment by the due date.
 
 ---
+
+### GitHub / Git
 
 **NOTE**: Due to unforseen circumstances, the GitHub repository was required to be duplicated. However the legacy commits were not migrated.
 
 The remote git repositories which are hosted on GitHub can be found using the links below:
 
 Legacy Repository: [https://github.com/hendricwidjaja/T2A2-Webserver-API](https://github.com/hendricwidjaja/T2A2-Webserver-API)  
-Final Repository: [https://github.com/hendricwidjaja/T2A2WebServerAPI](https://github.com/hendricwidjaja/T2A2WebServerAPI)
-
----
+Current Repository: [https://github.com/hendricwidjaja/T2A2WebServerAPI](https://github.com/hendricwidjaja/T2A2WebServerAPI)
 
 GitHub and Git were also used extensively throughout the creation of this API to date. As a source control tool (Git) which can be shared on the cloud via remote repositories (GitHub), any user can easily manage and track changes, 'save' various versions and even revert back to previous versions if need be. The main useful tools which were applied for the creation of this API include:
 
@@ -998,6 +1002,6 @@ VALID_INPUTS = ("sets", "reps", "weight", "distance_km", "distance_m", "hours", 
 
 ## References
 
-Chaudhuri, A. 2023. *The buddy boost: how 'accoutability partners' make you health, happy and more successful*. The Guardian, accessed 27 September 2024, Available at: [https://www.theguardian.com/lifeandstyle/2023/nov/27/the-buddy-boost-how-accountability-partners-make-you-healthy-happy-and-more-successful](https://www.theguardian.com/lifeandstyle/2023/nov/27/the-buddy-boost-how-accountability-partners-make-you-healthy-happy-and-more-successful)
+Chaudhuri, A. 2023. *The buddy boost: how 'accoutability partners' make you health, happy and more successful*. The Guardian, accessed 2 October 2024, Available at: [https://www.theguardian.com/lifeandstyle/2023/nov/27/the-buddy-boost-how-accountability-partners-make-you-healthy-happy-and-more-successful](https://www.theguardian.com/lifeandstyle/2023/nov/27/the-buddy-boost-how-accountability-partners-make-you-healthy-happy-and-more-successful)
 
-Davis, A.J., MacCarron, P. and Cohen, E. 2021. *Social reward and support effects on exercise experiences and performance: Evidence from parkrun*. PLoS One, 16(9), accessed 27 September 2024, Available at: [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8443045/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8443045/)
+Davis, A.J., MacCarron, P. and Cohen, E. 2021. *Social reward and support effects on exercise experiences and performance: Evidence from parkrun*. PLoS One, 16(9), accessed 2 October 2024, Available at: [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8443045/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8443045/)
