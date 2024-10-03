@@ -52,7 +52,7 @@ A snippet of code from the 'Delete User' route has been provided below which inc
 # /auth/users/<int:user_id> - DELETE - Delete user
 @auth_bp.route("/users/<int:user_id>", methods=["DELETE"])
 @jwt_required() # Check if the user has a valid JWT token
-@auth_as_admin_or_owner # Validates if user_id in URL exists and if logged in user is admin or owner of resource
+@auth_as_admin_or_owner # Check if user is authorised and if resource exists
 def delete_user(user_id):
     '''UPON REQUEST: database will keep any public routines but 
     delete private ones (default = delete all). 
@@ -181,9 +181,72 @@ Although there were other useful features which were used within Git and GitHub 
 
 ## R3 - 3rd Party Services, Packages & Dependencies
 
+**NOTE**: For this application, it will be assumed that the user already has python3 installed. 
+
+To check, you can follow the below quick guide.
+
+```bash
+# Type the below in your terminal
+python3 --version 
+
+# Example output
+Python 3.9.6
+```
+
+If python is installed, you should see python accompanied by the version number as per above example.
+
+If not, visit the offical website for Python at [https://www.python.org/downloads/](https://www.python.org/downloads/) and download Python3.
+
+**NOTE 2**: Before installing any packages, always remember to create a virtual environment and activate it. For further information, please see the first package explanation below.
+
+---
+
+### virtualenv
+
+**virtualenv** is a flexible 3rd party python package which allows for the creation of an isolated python environment. Although Python already comes with a venv module, virtualenv generally provides better compatability.  
+
+A python environment comes in the form of a directory or folder (named venv or .venv by convention) and is usually created in the project root directory.  
+The benefit of creating such environments allow for users to create multiple projects without them interfering with one another. This is useful when installing packages dependencies for a project.  
+
+When an package is installed, the user will generally receive the latest version. As these packages receive updates, these new releases can tend to come with general bug fixes or even different methods for its functionality. This means that the old version of a package which works for one project, may not necessarily work for another. By isolating projects in different virtual environments, conflicts between varying versions of packages and dependencies can be avoided.  
+
+The above pertains the main reason for its use in this API project.
+
+To **install** virtualenv, simply follow the below:
+
+``` BASH
+pip3 install virtualenv # To install virtualenv
+```
+
+Once virtualenv is installed, you can create a virtual environment by following the below.
+
+```BASH
+python3 -m venv venv
+```
+
+Activating the virtual environment:
+
+```BASH
+source venv/bin/activate # to activate the virtual environment
+
+'''If your virtual environment activates properly, you should see name of your virtual environemnt at the beginning of your shell prompt (e.g"(venv)") 
+'''
+(venv) coolguy@coolguylaptop:~ directory/of/your/project$ # Example output
+```
+
+Deactivating your virtual environment:
+
+```BASH
+deactivate # to deactivate the virtual environment
+
+'''Your shell prompt should return back to its original form if deactivation was successful
+'''
+coolguy@coolguylaptop:~ directory/of/your/project$ # Example output
+```
+
 ### PostgreSQL
 
-PostgreSQL is an object relational database management system which is incorporated into this application for this very purpose. It allows for the storage of data in tables, rows and columns. PostgreSQL contains various features which gives it a long standing history of being ACID compliant. It ensures the atomicity, consistency, integrity and durability of the data it stores. It's robustness and ability to support complicated queries makes it a strong choice for the API. It supports these complexities via its strong feature set of creating:
+**PostgreSQL** is an object relational database management system which is incorporated into this application for this very purpose. It allows for the storage of data in tables, rows and columns. PostgreSQL contains various features which gives it a long standing history of being **ACID** compliant. It ensures the atomicity, consistency, integrity and durability of the data it stores. It's robustness and ability to support complicated queries makes it a strong choice for the API. It supports these complexities via its strong feature set of creating:
 
 - Primary Keys
 - Foreign Keys
@@ -199,15 +262,47 @@ except IntegrityError as err:
     return {"error": f"An unexpected error occured when trying to add an exercise: {err}"}, 400
 ```
 
+All in all, PostgreSQL is required for this application for its primary purpose of storing data and its ability to manage complex queries, allowing a user to receive, view, update and delete specific data based on a variety of conditions for various scenarios.
+
 ---
+
+### psycopg2-binary
+
+**psycopg2-binary** is a 3rd party library from Python which acts as the bridge/database driver between Flask and a PostgreSQL. In comparison to its older sibling (psycopg2), psycopg2-binary is much easier to install and works out of the box. It provides a comprehensive tool set for directly interacting with PostgreSQL, enabling the the ability to perform SQL type queries such as DDL (Data Definition Language) and DML (Data Manipualtion Language). In this application, we use sqlalchemy to provide create these SQL type queries and psycopg2-binary does the interactions with PostgreSQL (database). The installation of psycopg2-binary is crucial for the API to function as it acts as one of the middle men between Python and PostgreSQL.
+
+To **install** psycopg2-binary, simply follow the below:
+
+```BASH
+pip3 install psycopg2-binary
+```
 
 ### Flask
 
-Flask is largely considered a micro web framework which is ultralight and easy to customise to allow various functionalities that can easily be extended through various libraries. Within this API, Flask allows for the structuring of HTTP routing to specific controllers, allowing the API to then logically fetch, create, delete and update data, before rendering the response back to the user. Flask is a crucial component of this API to handle the various routes and ensures that the right logic is applied to the data and given back to the user. Essentially, flask acts as a central control hub for the view functions and rules that are applied to URLs. Below is an example of several routes within the API that provide various functions/logic (via Blueprints).
+**Flask** is largely considered a micro web framework which is ultralight and easy to customise allowing various functionalities that can easily be extended through various libraries. It essentially acts as the backbone of the API. Its dependencies include:  
+
+- **Werkzeug**: provides the underlying utilities for WSGI (Web Server Gateway Interface) applications. It enables parsing of HTTP requests, route and session handling, etc.  
+
+- **Jinja 2**: provides HTML template rendering abilities (*not utilised in this API*) 
+
+- **itsdangerous**: to allow cryptographic token generation and validation (leveraged by flask_jwt_extended)  
+
+These dependencies are automatically installed when installing flask.
+
+To **install** flask, simply follow the below:
+
+```BASH
+pip3 install flask
+```
+
+Within this API, Flask allows for the structuring of HTTP routing to specific controllers, allowing the API to then logically fetch, create, delete and update data, before rendering the response back to the user. Flask is a crucial component of this API to handle the various routes and ensures that the right logic is applied to the data and given back to the user. Essentially, flask acts as a central control hub for the view functions and rules that are applied to URLs.  
+
+To **import** flask in your code, implement the below:
 
 ```bash
-from flask import Flask
+from flask import Flask # Imports the class Flask from flask
 ```
+
+Below are examples of several routes within the API that provide various functions/logic (via Blueprints).
 
 ```bash
 # Route with [GET] - fetches routines
@@ -241,9 +336,9 @@ def delete_routine(routine_id):
 
 ---
 
-### Flask-Bcrypt & bcrypt
+### Flask-Bcrypt
 
-Flask-Bcrypt is utilised to manage various verification and authentication features in APIs. It utilises various dependencies which make it possible to seamlessly integrate password hashing and password checking (bcrypt). This feature is a crucial aspect of maintaining the applications security and protection of user data. This helps prevent the sensitive password data of users of an application to be exposed. Examples of the usage of password hashing and checking can be seen under the below bcrypt dependency explanation.
+**Flask-Bcrypt** is an extension which is utilised to manage various verification and authentication features in APIs. It utilises various dependencies which make it possible to seamlessly integrate password hashing and password checking (**bcrypt**). This feature is a crucial aspect of maintaining the applications security and protection of user data. This helps prevent the sensitive password data of users of an application to be exposed. Examples of the usage of password hashing and checking can be seen under the below bcrypt dependency explanation.
 
 ```bash
 from flask_bcrypt import Bcrypt # Importing
@@ -274,9 +369,10 @@ if user and bcrypt.check_password_hash(user.password, body_data.get("password"))
 
 ---
 
-### Flask-JWT-Extended
+### Flask-JWT-Extended (required)
 
-Flask-JWT-Extended is what allows the JWT (JSON Web Token) functionality within this API. This authentication feature is another widely incorporated package which handles verfication of users and the provision of security tokens, enabling the control of access to data and database functions.
+**Flask-JWT-Extended** is what allows the JWT (JSON Web Token) functionality within this API. This authentication feature is another widely incorporated package which handles verfication of users and the provision of security tokens, enabling the control of access to data and database functions.  
+
 This package can be imported via:
 
 ```bash
@@ -284,27 +380,34 @@ This package can be imported via:
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 ```
 
-create_access_token:
+**create_access_token**:
 
 - creates an access token for a user, usually provided to the user in the header of a HTTP response when a user logs in
 
-jwt_required:
+**jwt_required**:
 
 - a decorator which can wrap a function to either allow or deny access, based on if a user is logged in or not
 
-get_jwt_identity:
+**get_jwt_identity**:
 
 - a function which allows an application to easily retrieve the logged in user's ID, providing a quick form of identification
 
 ---
 
-### FLask_SQLAlchemy
+### SQLAlchemy & flask_sqlalchemy (required)
 
-Flask SQLAlchemy is an object relational mapping (ORM) tool which allows for the abstraction of simplification of performing database operations. It does this by 'translating' data within the database into Python objects. The main features which are incorporated in this app are:
+SQLAlchemy is a dependency of flask_sqlalchemy. It is an object relational mapping (ORM) tool which allows for the abstraction and simplification of performing database operations. It does this by 'mapping' data within the database to Python objects. flask_sqlalchemy is an extension of flask which provides an easier time for developers to use SQLAlchemy within their application. The main features which are incorporated in this app are:
 
 - Metadata
 - Access to Columns and relationships for when defining models
 - Sessions
+
+To install SQLAlchemy and flask_sqlalchemy, simply follow the below:
+
+```BASH
+pip3 install sqlalchemy # installs SQLAlchemy
+pip3 install flask_sqlalchemy # installs flask_sqlalchemy
+```
 
 An example of this implementation can be seen below for the RoutineExercise model within the API.
 
@@ -338,20 +441,20 @@ class RoutineExercise(db.Model):
 #### Examples of sessions
 
 ```bash
-db.session.scalars(stmt).all() # Creating sessions (fetched data from database)
+db.session.scalars(stmt).all() # Creating sessions
 db.session.add(exercise) # Adding to session
 db.session.commit() # Committing sessions to database
 ```
 
-### Flask-Marshmallow
+### Flask-Marshmallow (required)
 
 Enter here
 
-### marshmallow & marshmallow-sqlalchemy
+### marshmallow & marshmallow-sqlalchemy (required? dependency?)
 
 Enter here
 
-### python-dotenv
+### python-dotenv (required)
 
 Python dotenv is utilised in this API to assist with configuring the necessary environment variables. This includes the 'DATABASE URI' and 'JWT' Secret Key particularly in this API. These highly important but extremely vulnerable forms of data are easily abstracted and modularised using python dotenv which allows for the separation of the APIs configuration settings and the logic's application.
 
@@ -362,9 +465,11 @@ DATABASE_URL = "postgresql+psycopg2://<name_of_admin>:<password>@localhost:5432/
 JWT_SECRET_KEY = "<enter secret key>"
 ```
 
-### SQLALchemy
+To install python-dotenv, simply follow the below:
 
-Enter here
+```BASH
+pip3 install python-dotenv
+```
 
 ## R4 - Benefits & Drawbacks of of Postgresql
 
