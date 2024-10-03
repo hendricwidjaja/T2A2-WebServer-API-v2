@@ -1,4 +1,4 @@
-# T2A2 API Webserver - Workout Together Planner API
+# T2A2: API Webserver - Workout Together Planner API
 
 Welcome to the documentation of Hendric Widjaja's - T2A2: API Webserver.
 
@@ -14,12 +14,13 @@ Please use the links below to quickly access key parts of this documentation.
 - [R4 - Benefits & Drawbacks of Postgresql](#r4---benefits--drawbacks-of-of-postgresql)
 - [R5 - Explain the features, purpose & functionalities of the object-relational mapping system (ORM) used in this app](#r5---explain-the-features-purpose-and-functionalities-of-the-orm-system-for-this-app)
 - [R6 - Entity Relationship Diagram](#r6---entity-relationship-diagram)
-- [R7 - Explain the implemeneted models and their relationships, including how the relationships aid database implementation](#r7-explain-the-implemented-models-and-the-relationship-including-how-the-relationshipos-aid-database-implementation)
+- [R7 - Explain the implemeneted models and their relationships, including how the relationships aid database implementation](#r7---explain-the-implemented-models-and-the-relationship-including-how-the-relationships-aid-database-implementation)
 - [R8 - API Endpoints Tutorial & Explanation](#r8---api-endpoints-tutorial--explanation)
 
 ## Quick Notes
 
 ### PEP 8 Style Guide
+
 The [PEP8 Style Guide](https://peps.python.org/pep-0008/) for Python Code (written by Guido van Rossum, Barry Warsaw & Alyssa Coghlan) was implemented for the writing of this application's code. For commenting purposes (as per recommendation from PEP 8), PEP 257 is also adopted for the formatting of docstrings. Examples of how these style guides were implemented are as per below:
 
 - Space on either side of binary operators for assignment, augmented assignment, comparison & booleans
@@ -116,7 +117,7 @@ git add <filename> (OR) git add .
 #### Creates a saved snapshot of the current version of the repository. This version can then be referred to at a later date or even reverted back to if need be
 
 ```bash
-git commit -m "<insert meaningful message>" 
+git commit -m "insert meaningful message" 
 ```
 
 #### To 'push' the commit to the remote repository (which can then be accessed by others)
@@ -152,7 +153,16 @@ PostgreSQL is an object relational database management system which is incorpora
 - Constraints (Unique, default, Nullable)
 - Various datatypes
 
-Other than the above, the Workout Together Planner API also utilises functions such as rollbacks which PostgreSQL supports. This allows any sessions or transactions to be cancelled in the event of errors that may cause integrity issues.
+Other than the above, the Workout Together Planner API also utilises functions such as **rollbacks** which PostgreSQL supports. This allows any sessions or transactions to be cancelled in the event of errors that may cause integrity issues.
+
+```bash
+# Error handling & rollback 
+except IntegrityError as err:
+    db.session.rollback() # example of rollback implementation
+    return {"error": f"An unexpected error occured when trying to add an exercise: {err}"}, 400
+```
+
+---
 
 ### Flask
 
@@ -162,7 +172,37 @@ Flask is largely considered a micro web framework which is ultralight and easy t
 from flask import Flask
 ```
 
-![Flask_route_examples](/docs/R3_flask_example.png)
+```bash
+# Route with [GET] - fetches routines
+@routines_bp.route("/", methods=["GET"])
+@jwt_required(optional=True)
+def get_routines():
+```
+
+```bash
+# Route with [POST] - copies another routine
+@routines_bp.route("/<int:routine_id>/copy", methods=["POST"])
+@jwt_required()  # User must be logged in
+def copy_routine(routine_id):
+```
+
+```bash
+# Route with [PUT] or [PATCH]- updates a routine
+@routines_bp.route("/<int:routine_id>", methods=["PUT", "PATCH"])
+@jwt_required()
+@auth_as_admin_or_owner
+def update_routine(routine_id):
+```
+
+```bash
+# Route with [DELETE] - deletes a routine
+@routines_bp.route("/<int:routine_id>", methods=["DELETE"])
+@jwt_required()
+@auth_as_admin_or_owner # Performs validation & checks if user is admin or owner or resource
+def delete_routine(routine_id):
+```
+
+---
 
 ### Flask-Bcrypt & bcrypt
 
@@ -174,11 +214,28 @@ pw_hash = bcrypt.generate_password_hash(password) # Hashing passwords
 bcrypt.check_password_hash(pw_hash, candidate) # Checking passwords
 ```
 
-- An example of checking password
-![bcrypt_example_1](./docs/R3_bcrypt1.png)
+### An example of password hashing
 
-- An example of password hashing
-![bcrypt_example_2](./docs/R3_bcrypt2.png)
+```bash
+# Hash the password using bcrypt
+password = body_data.get("password")
+if password:
+    user.password = bcrypt.generate_password_hash(password).decode("utf-8")
+# Add and commit to the DB
+db.session.add(user)
+db.session.commit()
+# Return acknowledgement for the successful creation of a user account
+return user_schema.dump(user), 201
+```
+
+### An example of password checking
+
+```bash
+# If the user exists and the password is correct
+if user and bcrypt.check_password_hash(user.password, body_data.get("password")): # checks password in database vs. JSON body
+```
+
+---
 
 ### Flask-JWT-Extended
 
@@ -186,6 +243,7 @@ Flask-JWT-Extended is what allows the JWT (JSON Web Token) functionality within 
 This package can be imported via:
 
 ```bash
+# Import flask_jwt_extended modules
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 ```
 
@@ -196,36 +254,93 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 - get_jwt_identity:
   - a function which allows an application to easily retrieve the logged in user's ID, providing a quick form of identification
 
+---
+
 ### FLask_SQLAlchemy
 
 Flask SQLAlchemy is an object relational mapping (ORM) tool which allows for the abstraction of simplification of performing database operations. It does this by 'translating' data within the database into Python objects. The main features which are incorporated in this app are:
 
 - Metadata
-- Sessions
 - Access to Columns and relationships for when defining models
+- Sessions
 
 An example of this implementation can be seen below for the RoutineExercise model within the API.
-![SQLAlchemy_Example](/docs/R3_sqlalchemy.png)  
+
+```bash
+# Table for Routine Exercises
+class RoutineExercise(db.Model):
+    # Name of table
+    __tablename__ = "routine_exercises"
+
+    # Attributes of table (columns)
+    id = db.Column(db.Integer, primary_key=True)
+    sets = db.Column(db.Integer)
+    reps = db.Column(db.Integer)
+    weight = db.Column(db.Integer)
+    distance_km = db.Column(db.Integer)
+    distance_m = db.Column(db.Integer)
+    hours = db.Column(db.Integer)
+    minutes = db.Column(db.Integer)
+    seconds = db.Column(db.Integer)
+    note = db.Column(db.String)
+
+    # Foreign Keys
+    routine_id = db.Column(db.Integer, db.ForeignKey("routines.id"), nullable=False)
+    exercise_id = db.Column(db.Integer, db.ForeignKey("exercises.id"), nullable=False)
+
+    # Define relationships with exercise and routine table
+    exercise = db.relationship("Exercise", back_populates="routine_exercises")
+    routine = db.relationship("Routine", back_populates="routine_exercises")
+```
+
+Examples of sessions
+
+```bash
+db.session.scalars(stmt).all() # Creating sessions (fetched data from database)
+db.session.add(exercise) # Adding to session
+db.session.commit() # Committing sessions to database
+```
 
 ### Flask-Marshmallow
 
+Enter here
+
 ### marshmallow & marshmallow-sqlalchemy
+
+Enter here
 
 ### python-dotenv
 
 Python dotenv is utilised in this API to assist with configuring the necessary environment variables. This includes the 'DATABASE URI' and 'JWT' Secret Key particularly in this API. These highly important but extremely vulnerable forms of data are easily abstracted and modularised using python dotenv which allows for the separation of the APIs configuration settings and the logic's application.
 
+```bash
+# Example .env for the configuration of environment variables
+# Replace place holder values (e.g. <name_of_admin>) with your own chosen details/credentials
+DATABASE_URL = "postgresql+psycopg2://<name_of_admin>:<password>@localhost:5432/<name_of_database>"
+JWT_SECRET_KEY = "<enter secret key>"
+```
+
 ### SQLALchemy
+
+Enter here
 
 ## R4 - Benefits & Drawbacks of of Postgresql
 
 PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Object Relational Database Management System) which is commonly integrated in flask applications and is one of the most popular database services today due to its reach feature sets, ACID compliance and large community backing. In its most general sense, being a relational database management system infers that it stores data in the form of tables, columns and rows. Tables generally refer to entities, columns to attributes and rows to objects or instances.
 
+Enter here
+
 ## R5 - Explain the Features, purpose and functionalities of the ORM system for this app
+
+Enter here
 
 ## R6 - Entity Relationship Diagram
 
+Enter here
+
 ## R7 - Explain the implemented models and the relationship, including how the relationships aid database implementation
+
+Enter here
 
 ## R8 - API Endpoints Tutorial & Explanation
 This section contains all end points/routes within each controller for the main API. Each route will contain **at least** one example of a return on success and return on failure example. These will include:
