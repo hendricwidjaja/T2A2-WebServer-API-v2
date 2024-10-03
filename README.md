@@ -1,4 +1,4 @@
-# T2A2 API Webserver - Workout Together Planner API (FINAL)
+# T2A2 API Webserver - Workout Together Planner API
 
 Welcome to the documentation of Hendric Widjaja's - T2A2: API Webserver.
 
@@ -586,7 +586,7 @@ routines_bp = Blueprint("routines", __name__, url_prefix="/routines")
 **Success & Error Examples**
 
 ![alt text](<docs/R8/Routine - Fetch all routines (liked) - 200.png>)
-![alt text](<docs/R8/Routine - Fetch all routines (liked) - 405.png>)
+![alt text](<docs/R8/Routine - Fetch all routines (liked) - 404.png>)
 
 #### 17. Create a new routine
 
