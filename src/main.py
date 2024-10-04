@@ -21,7 +21,7 @@ def create_app():
     app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY")
 
     # Initialise database, marshmallow, bcrypt and JWT with flask app
-    db.init_app(app)
+    db.init_app(app) # SQLAlchemy must be initalised before marshmallow
     ma.init_app(app)
     bcrypt.init_app(app)
     jwt.init_app(app)

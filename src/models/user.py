@@ -26,12 +26,42 @@ class User(db.Model):
     likes = db.relationship("Like", back_populates="user", cascade="all, delete")
 
 class UserSchema(ma.Schema):
-    # Reason for validation are as per error messages provided. Generally ensure that any inputs from the user are not too long and are easy to read within the app. E.g. prevent multiple consecutive underscores in username, etc.
-    username = fields.String(required=True, validate=Regexp(r"^(?=.{4,20}$)(?!.*[_.]{2})[a-zA-Z0-9._]+$", error="Username must be 4-20 characters long (no spaces). It can only contain letters, digits, periods(.) and or underscores(_). Consecutive periods or underscores are not permitted."))
-    email = fields.String(required=True, validate=Regexp(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", error="Invalid Email Format"))
-    password = fields.String(required=True, validate=Regexp(r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,20}$", error="Password must be 6-20 characters long and must include at least one letter (a-z, A-Z), one number (0-9) & one special character (@$!%*#?&)"))
-    firstname = fields.String(required=False, validate=Length(max=50, min=1), error="Cannot exceed 50 characters")
-    lastname = fields.String(required=False, validate=Length(max=50, min=1), error="Cannot exceed 50 characters")
+    '''Reason for validation are as per error messages provided. 
+    Generally ensure that any inputs from the user are not too long 
+    and are easy to read within the app. 
+    E.g. prevent multiple consecutive underscores in username, etc.
+    '''
+    username = fields.String(
+        required=True, 
+        validate=Regexp(
+            r"^(?=.{4,20}$)(?!.*[_.]{2})[a-zA-Z0-9._]+$", 
+            error="Username must be 4-20 characters long (no spaces). "
+            "It can only contain letters, digits, periods(.) and or underscores(_). "
+            "Consecutive periods or underscores are not permitted.")
+            )
+    email = fields.String(
+        required=True, 
+        validate=Regexp(
+            r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", 
+            error="Invalid Email Format")
+            )
+    password = fields.String(
+        required=True, 
+        validate=Regexp(
+            r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,20}$", 
+            error="Password must be 6-20 characters long and must include at least one letter (a-z, A-Z), "
+            "one number (0-9) & one special character (@$!%*#?&)")
+            )
+    firstname = fields.String(
+        required=False, 
+        validate=Length(max=50, min=1), 
+        error="Cannot exceed 50 characters"
+        )
+    lastname = fields.String(
+        required=False, 
+        validate=Length(max=50, min=1), 
+        error="Cannot exceed 50 characters"
+        )
 
     # Confirms which fields can be visible
     class Meta:

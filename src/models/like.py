@@ -12,7 +12,10 @@ class Like(db.Model):
     # Attributes of table
     id = db.Column(db.Integer, primary_key=True)
     # Foreign Keys
-    # Note: created attribute with timestamp has been added to assist "View Liked Routines" route to allow user to retrieve the like routines from most recently liked to oldest.
+    '''# Note: created attribute with timestamp has been added to 
+    assist "View Liked Routines" route to allow user to retrieve the 
+    like routines from most recently liked to oldest.
+    '''
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     routine_id = db.Column(db.Integer, db.ForeignKey("routines.id"), nullable=False)
     created = db.Column(db.DateTime, server_default=func.current_timestamp(), nullable=False)

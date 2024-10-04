@@ -5,8 +5,18 @@ from init import db, ma
 from marshmallow import fields
 from marshmallow.validate import OneOf, Length
 
-# Constant variable for valid "body_parts" to be trained to allow for easier tracking and updating of valid "body_parts"
-VALID_BODYPARTS = ("Chest", "Shoulders", "Back", "Legs", "Triceps", "Biceps", "Core", "Cardio")
+'''Constant variable for valid "body_parts" to be trained
+to allow for easier tracking and updating of valid "body_parts"
+'''
+VALID_BODYPARTS = (
+    "Chest", 
+    "Shoulders", 
+    "Back", "Legs", 
+    "Triceps", 
+    "Biceps", 
+    "Core", 
+    "Cardio"
+    )
 
 # Table for Exercises
 class Exercise(db.Model):
@@ -27,7 +37,11 @@ class Exercise(db.Model):
     routine_exercises = db.relationship("RoutineExercise", back_populates="exercise")
 
 class ExerciseSchema(ma.Schema):
-    # Reason for validation is to ensure any required fields are included in user requests. Also ensures inputs are not too larger. Nested values are also included (e.g. created_by) to allow more information to users when exercises are included in responses.
+    '''Reason for validation is to ensure any required fields 
+    are included in user requests. Also ensures inputs are not too larger. 
+    Nested values are also included (e.g. created_by) to allow more 
+    information to users when exercises are included in responses.
+    '''
     exercise_name = fields.String(required=True, validate=Length(max=50, min=1))
     description = fields.String(validate=Length(max=255))
     body_part = fields.String(required=True, validate=OneOf(VALID_BODYPARTS))
@@ -35,7 +49,13 @@ class ExerciseSchema(ma.Schema):
 
     # Confirms which fields can be visible
     class Meta:
-        fields = ("id", "exercise_name", "description", "body_part", "created_by")
+        fields = (
+            "id", 
+            "exercise_name", 
+            "description", 
+            "body_part", 
+            "created_by"
+            )
 
 # to hand a single exercise object
 exercise_schema = ExerciseSchema()

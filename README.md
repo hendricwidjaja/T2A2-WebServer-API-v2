@@ -181,7 +181,7 @@ Although there were other useful features which were used within Git and GitHub 
 
 ## R3 - 3rd Party Services, Packages & Dependencies
 
-**NOTE**: For this application, it will be assumed that the user already has python3 installed. 
+**NOTE**: For this application, it will be assumed that the user already has python3 installed.  
 
 To check, you can follow the below quick guide.
 
@@ -229,7 +229,9 @@ Activating the virtual environment:
 ```BASH
 source venv/bin/activate # to activate the virtual environment
 
-'''If your virtual environment activates properly, you should see name of your virtual environemnt at the beginning of your shell prompt (e.g"(venv)") 
+'''If your virtual environment activates properly,  
+you should see name of your virtual environemnt at  
+the beginning of your shell prompt (e.g"(venv)").
 '''
 (venv) coolguy@coolguylaptop:~ directory/of/your/project$ # Example output
 ```
@@ -239,7 +241,8 @@ Deactivating your virtual environment:
 ```BASH
 deactivate # to deactivate the virtual environment
 
-'''Your shell prompt should return back to its original form if deactivation was successful
+'''Your shell prompt should return back to its  
+original form if deactivation was successful.
 '''
 coolguy@coolguylaptop:~ directory/of/your/project$ # Example output
 ```
@@ -282,7 +285,7 @@ pip3 install psycopg2-binary
 
 - **Werkzeug**: provides the underlying utilities for WSGI (Web Server Gateway Interface) applications. It enables parsing of HTTP requests, route and session handling, etc.  
 
-- **Jinja 2**: provides HTML template rendering abilities (*not utilised in this API*) 
+- **Jinja 2**: provides HTML template rendering abilities (*not utilised in this API*)  
 
 - **itsdangerous**: to allow cryptographic token generation and validation (leveraged by flask_jwt_extended)  
 
@@ -369,7 +372,7 @@ if user and bcrypt.check_password_hash(user.password, body_data.get("password"))
 
 ---
 
-### Flask-JWT-Extended (required)
+### Flask-JWT-Extended
 
 **Flask-JWT-Extended** is what allows the JWT (JSON Web Token) functionality within this API. This authentication feature is another widely incorporated package which handles verfication of users and the provision of security tokens, enabling the control of access to data and database functions.  
 
@@ -394,15 +397,15 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 
 ---
 
-### SQLAlchemy & flask_sqlalchemy (required)
+### SQLAlchemy & Flask-SQLAlchemy
 
-SQLAlchemy is a dependency of flask_sqlalchemy. It is an object relational mapping (ORM) tool which allows for the abstraction and simplification of performing database operations. It does this by 'mapping' data within the database to Python objects. flask_sqlalchemy is an extension of flask which provides an easier time for developers to use SQLAlchemy within their application. The main features which are incorporated in this app are:
+SQLAlchemy is a dependency of Flask-SQLAlchemy. It is an object relational mapping (ORM) tool which allows for the abstraction and simplification of performing database operations. It does this by 'mapping' data within the database to Python objects. flask_sqlalchemy is an extension of flask which provides an easier time for developers to use SQLAlchemy within their application (acting like a bridge between SQLAlchemy and flask). The main features which are incorporated in this app are:
 
 - Metadata
 - Access to Columns and relationships for when defining models
 - Sessions
 
-To install SQLAlchemy and flask_sqlalchemy, simply follow the below:
+To install SQLAlchemy and Flask-SQLAlchemy, simply follow the below:
 
 ```BASH
 pip3 install sqlalchemy # installs SQLAlchemy
@@ -446,29 +449,47 @@ db.session.add(exercise) # Adding to session
 db.session.commit() # Committing sessions to database
 ```
 
-### Flask-Marshmallow (required)
+### Flask-Marshmallow, Marshmallow & marshmallow_sqlalchemy
 
-Enter here
+**Flask-Marshmallow** is a 3rd party package for Python which enables an easier and more streamlined approach for the serialisation and deserialisation of data. Flask-marshmallow can be seen as a bridge or interface between flask and marshmallow which provides further functionality and customisation options.
 
-### marshmallow & marshmallow-sqlalchemy (required? dependency?)
+**Marshmallow** is a dependency of Flask-Marshmallow which automatically gets installed at the same time and acts as the as the core library which manages the data serilization and deserialization. The process of data serialisation and deserialisation is important to allow for the conversion of data into understandable formats for both the client and API. Data received from clients are commonly provided in the body of HTTP requests using a serialised format such as JSON or XML. When this happens, Marshmallow will deserialise the data into a Python data structure, allowing the data to be used, manipulated and/or applied to logic within the API. Once the data is ready to be sent back to the client in the form of a response, marshmallow will serialise the data back into JSON format which gets attached to the body of the response.  
 
-Enter here
+In addition to this process, Marshmallow also provides the functionality for data validation. While simple data validation occurs at the flask level, Marshmallow does most of the heavy lifting when it comes to validation. In this API, it acts as the main bodyguard to the database, ensuring that the database only receives expected data and in predefined structures.
 
-### python-dotenv (required)
+**marshmallow_sqlalchemy** provides futher tools which can be utilised for 
+
+**marshmallow_sqlalchemy** is an extension of Marshmallow which provides further functionality when working with SQLAlchemy such as relationship handling, field customisation
+
+### python-dotenv
 
 Python dotenv is utilised in this API to assist with configuring the necessary environment variables. This includes the 'DATABASE URI' and 'JWT' Secret Key particularly in this API. These highly important but extremely vulnerable forms of data are easily abstracted and modularised using python dotenv which allows for the separation of the APIs configuration settings and the logic's application.
+
+To install python-dotenv, simply follow the below:
+
+```BASH
+pip3 install python-dotenv
+```
+
+The below provides the usage of python-dotenv in this API
+
+```BASH
+# Create Flask app
+def create_app():
+  app = Flask(__name__)
+
+  '''Configure connection to database. 
+  Retrieve DATABASE_URL & JWT_SECRET_KEY from .env
+  ''' 
+  app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+  app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY")
+```
 
 ```bash
 # Example .env for the configuration of environment variables
 # Replace place holder values (e.g. <name_of_admin>) with your own chosen details/credentials
 DATABASE_URL = "postgresql+psycopg2://<name_of_admin>:<password>@localhost:5432/<name_of_database>"
 JWT_SECRET_KEY = "<enter secret key>"
-```
-
-To install python-dotenv, simply follow the below:
-
-```BASH
-pip3 install python-dotenv
 ```
 
 ## R4 - Benefits & Drawbacks of of Postgresql

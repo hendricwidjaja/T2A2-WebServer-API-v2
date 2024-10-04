@@ -1,15 +1,15 @@
+# Import bcrypt and SQLAlchemy for password hashing and database functionality
+from init import bcrypt, db
+# Import models and schemas required for object creation and to serialise/deserialise data
+from models.user import User, user_schema, UserSchema
+from models.exercise import Exercise
+from models.routine import Routine
+
 # Import timedelta for access token expiry (USER LOGIN route)
 from datetime import timedelta
 
 # Import Blueprint & request for better organisation and route management
 from flask import Blueprint, request
-
-# Import models and schemas required for object creation and to serialise/deserialise data
-from models.user import User, user_schema, UserSchema
-from models.exercise import Exercise
-from models.routine import Routine
-# Import bcrypt and SQLAlchemy for password hashing and database functionality
-from init import bcrypt, db
 
 # Import validation and authentication libraries for error handling, authentication and JWT management
 from sqlalchemy.exc import IntegrityError
@@ -32,7 +32,7 @@ If the user decides to keep them on the server, their public routines will be tr
 DELETED_ACCOUNT_ID = 1
 
 
-# /auth/register - REGISTER NEW USER (User MUST provide email, username and password (Optional: firstname, lastname, is_admin[default=False]))
+# /auth/register - REGISTER NEW USER
 @auth_bp.route("/register", methods=["POST"])
 @jwt_required(optional=True)
 def register_user():
@@ -143,7 +143,8 @@ def update_user():
         # If the user inserts a new passowrd, store the new password in a variable named "password" 
         password = body_data.get("password")
 
-        '''fetch the user from the database by extracting the user's identity from the JWT token they passed in the header and finding the user ID it matches to in the database, 
+        '''fetch the user from the database by extracting the user's identity 
+        from the JWT token they passed in the header and finding the user ID it matches to in the database, 
         SELECT * FROM user WHERE id = get_jwt_identity
         '''
         stmt = db.select(User).filter_by(id=get_jwt_identity())
@@ -230,4 +231,6 @@ def delete_user(user_id):
     db.session.commit()
 
     # return an acknowledgement message
-    return {"message": f"User with id {user_id} has been deleted. We have {decision} your public routines. If you have any questions, please email us on '{ADMIN_EMAIL}'. We hope you come back soon!"}, 200
+    return {"message": f"User with id {user_id} has been deleted. "
+            f"We have {decision} your public routines. If you have any questions, "
+            f"please email us on '{ADMIN_EMAIL}'. We hope you come back soon!"}, 200

@@ -1,8 +1,8 @@
-# Import Blueprint class for better organisation and route management
-from flask import Blueprint
-
 # Import sqlalchemy and bcrypt (password hashing for creating user accounts)
 from init import db, bcrypt
+
+# Import Blueprint class for better organisation and route management
+from flask import Blueprint
 
 # Import all models to allow for respective object creation for testing purposes
 from models.user import User

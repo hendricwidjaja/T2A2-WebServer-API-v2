@@ -9,7 +9,17 @@ from marshmallow.validate import Length, Range
 # Constant variable for max inputs
 MAX_RANGE = 999999
 # Constant variable for valid inputs
-VALID_INPUTS = ("sets", "reps", "weight", "distance_km", "distance_m", "hours", "minutes", "seconds", "note")
+VALID_INPUTS = (
+    "sets", 
+    "reps", 
+    "weight", 
+    "distance_km", 
+    "distance_m", 
+    "hours", 
+    "minutes", 
+    "seconds", 
+    "note"
+    )
 
 # Table for Routine Exercises
 class RoutineExercise(db.Model):
@@ -36,8 +46,11 @@ class RoutineExercise(db.Model):
     exercise = db.relationship("Exercise", back_populates="routine_exercises")
     routine = db.relationship("Routine", back_populates="routine_exercises")
 
-# Reason for validation is to ensure that user inputs are not too long. Also to ensure particular attributes do not exceed certain values (e.g. minutes and seconds should not exceed 59).
-# Also include nesting for retrieving the associated exercise name for the exercise_id. This is retrieved by accessing the exercise relationship.
+'''Reason for validation is to ensure that user inputs are not too long.
+Also to ensure particular attributes do not exceed certain values (e.g. minutes and seconds should not exceed 59).
+Also include nesting for retrieving the associated exercise name for the exercise_id. 
+This is retrieved by accessing the exercise relationship.
+'''
 class RoutineExerciseSchema(ma.Schema):
     sets = fields.Integer(validate=Range(max=MAX_RANGE))
     reps = fields.Integer(validate=Range(max=MAX_RANGE))
@@ -52,7 +65,9 @@ class RoutineExerciseSchema(ma.Schema):
     exercise_name = fields.Nested("ExerciseSchema", only=["exercise_name"], attribute="exercise")
 
 
-    # Pre-load decorator to perform validation on user input. Raise a validation error if no attributes provided to avoid empty routine_exercises. 
+    '''Pre-load decorator to perform validation on user input. 
+    Raise a validation error if no attributes provided to avoid empty routine_exercises. 
+    '''
     @pre_load
     def validate_attributes(self, data, **kwargs):
         # Create a list to hold valid attributes
@@ -71,7 +86,11 @@ class RoutineExerciseSchema(ma.Schema):
         # If valid attributes exist, return the data
         return data
 
-    # Using @post_dump decorator to apply function which removes fields with None values before providing output to user. This ensures that only relevant data is displayed when a routine exercise is dumped. 
+    '''Using @post_dump decorator to apply function which removes 
+    fields with None values before providing output to user. 
+    This ensures that only relevant data is 
+    displayed when a routine exercise is dumped. 
+    '''
     @post_dump
     def remove_none_values(self, data, **kwargs):
         # Initialise empty dictionary to return to user

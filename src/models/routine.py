@@ -8,9 +8,23 @@ from sqlalchemy import func
 from marshmallow import fields, validates
 from marshmallow.validate import OneOf, Length
 
-'''Constant variable for valid "target" muscle groups to be trained to allow for easier tracking and updating of valid "targets"
+'''Constant variable for valid "target" muscle groups to be trained to 
+allow for easier tracking and updating of valid "targets"
 '''
-VALID_TARGET = ("Full-body", "Upper-body", "Lower-body", "Push-workout", "Pull-workout", "Chest", "Shoulders", "Back", "Legs", "Arms", "Core", "Cardio")
+VALID_TARGET = (
+    "Full-body", 
+    "Upper-body", 
+    "Lower-body", 
+    "Push-workout", 
+    "Pull-workout", 
+    "Chest", 
+    "Shoulders", 
+    "Back", 
+    "Legs", 
+    "Arms", 
+    "Core", 
+    "Cardio"
+    )
 
 # Table for Routine Model
 class Routine(db.Model):
@@ -23,28 +37,41 @@ class Routine(db.Model):
     description = db.Column(db.String)
     target = db.Column(db.String, nullable=False)
     public = db.Column(db.Boolean, default=False, nullable=False)
-    last_updated = db.Column(db.DateTime, server_default=func.current_timestamp(), onupdate=func.current_timestamp(), nullable=False)
+    last_updated = db.Column(
+        db.DateTime, 
+        server_default=func.current_timestamp(), 
+        onupdate=func.current_timestamp(), 
+        nullable=False
+        )
 
     # Foreign Keys
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
 
-    # Define relationships with user, routine exercises and likes table. Delete all associated routine exercises and likes when routine is deleted.
-    '''Routine exercises associated with public routines will be kept by transferring ownership to "DELETED ACCOUNT" account if user chooses to not delete public routines when deleting account (see logic for delete user in auth_controller.py)
+    # Define relationships with user, routine exercises and likes table. 
+    # Delete all associated routine exercises and likes when routine is deleted.
+    '''Routine exercises associated with public routines will be kept by 
+    transferring ownership to an account called "DELETED ACCOUNT".
+    This only occurs if user chooses to NOT delete public routines 
+    when deleting account (see logic for delete user in auth_controller.py).
     '''
     user = db.relationship("User", back_populates="routines")
     routine_exercises = db.relationship("RoutineExercise", back_populates="routine", cascade="all, delete")
     likes = db.relationship("Like", back_populates="routine", cascade="all, delete")
 
-    # Function to count how many users have liked the specific instance of a routine. Accesses relationship with Like model via 'likes'.
+    '''Function to count how many users have liked the specific instance of a routine. 
+    # Accesses relationship with Like model via 'likes'.
+    '''
     def count_likes(self):
         return len(self.likes)
 
 class RoutineSchema(ma.Schema):
     '''Reason for validation are as per error messages provided. 
     Generally ensure user inputs are not too long and any required inputs are provided by user.
-    Also used for formatting (e.g. timestamp) and allowing nesting of data from other tables (e.g. created_by & routine methods).
-    Also incorporate fields.Method to call function (get_likes_count) which calculates the amount of likes for a particular routine instance which can then be seen by user when routine is dumped. 
+    Also used for formatting (e.g. timestamp) and allowing nesting of data from other tables 
+    (e.g. created_by & routine methods).
+    Also incorporate fields.Method to call function (get_likes_count) which calculates 
+    the amount of likes for a particular routine instance which can then be seen by user when routine is dumped. 
     '''
     routine_title = fields.String(validate=Length(max=50), error="Routine title cannot exceed 50 characters.")
     description = fields.String(validate=Length(max=255), error="You have exceeded the 255 character count limit.")
@@ -53,7 +80,9 @@ class RoutineSchema(ma.Schema):
     last_updated = fields.Method("format_timestamp")
     created_by = fields.Nested("UserSchema", only=["username"], attribute="user")
     routine_exercises = fields.List(fields.Nested('RoutineExerciseSchema'), attribute="routine_exercises")
-    # Defines the "likes_count" field as an integer which is equal to the result of the "count_likes" method in the Routine model.
+    '''Defines the "likes_count" field as an integer which is equal to 
+    the result of the "count_likes" method in the Routine model.
+    '''
     likes_count = fields.Method("get_likes_count")
 
     # Method to format the last_updated timestamp
@@ -73,7 +102,17 @@ class RoutineSchema(ma.Schema):
 
     # Confirms which fields can be visible
     class Meta:
-        fields = ("id", "routine_title", "description", "target", "public", "last_updated", "created_by", "routine_exercises", "likes_count")
+        fields = (
+            "id", 
+            "routine_title", 
+            "description", 
+            "target", 
+            "public", 
+            "last_updated", 
+            "created_by", 
+            "routine_exercises", 
+            "likes_count"
+            )
 
 # to hand a single routine object
 routine_schema = RoutineSchema()

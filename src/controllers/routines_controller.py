@@ -1,9 +1,5 @@
-# Import Blueprint & request for better organisation and route management
-from flask import Blueprint, request
-
-# Import the func module for database SQL functions (count likes)
-from sqlalchemy import func
-
+# Import SQLAlchemy database for database operations
+from init import db
 # Import models and schemas required for object creation and to serialise/deserialise data
 from models.user import User
 from models.exercise import Exercise
@@ -11,27 +7,36 @@ from models.routine import Routine, routine_schema, routines_schema, VALID_TARGE
 from models.routine_exercise import RoutineExercise, routine_exercise_schema
 from models.like import Like
 
-# Import SQLAlchemy database for database operations
-from init import db
-
-# Import from utils.py:
-# auth_as_admin_or_owner: decorator which checks if logged in user has authorisation to access the decorated route
-# user_is_admin: function which checks if logged in user is admin
-from utils import auth_as_admin_or_owner, user_is_admin
-
-# Import authentication libraries
-# jwt_required: decorator which checks if user logged in
-# get_jwt_identity: function which grabs the logged in users user ID
+# Import Blueprint & request for better organisation and route management
+from flask import Blueprint, request
+'''Import authentication libraries
+jwt_required: decorator which checks if user logged in
+get_jwt_identity: function which grabs the logged in users user ID
+'''
 from flask_jwt_extended import jwt_required, get_jwt_identity
+
+# Import the func module for database SQL functions (count likes)
+from sqlalchemy import func
+
+'''Import from utils.py:
+auth_as_admin_or_owner: decorator which checks if logged in user has authorisation to access the decorated route
+user_is_admin: function which checks if logged in user is admin
+'''
+from utils import auth_as_admin_or_owner, user_is_admin
 
 # Create a blueprint named "routines". Also decorate with url_prefix for management of routes.
 routines_bp = Blueprint("routines", __name__, url_prefix="/routines")
 
 
-# /routines - GET - fetch all public routines + personal private routines if logged in. Admin can see all. Allows users to see what the newest routines which have been added or updated by other users
+# /routines - GET - fetch all routines 
 @routines_bp.route("/", methods=["GET"])
 @jwt_required(optional=True)
 def get_routines():
+    '''public routines + personal private routines if logged in. 
+    Admin can see all. Allows users to see what the newest routines 
+    which have been added or updated by other users.
+    '''
+
     # Fetch user_id if exists
     user_id = get_jwt_identity()
 
@@ -51,7 +56,9 @@ def get_routines():
 
         # If user is not admin
         else:
-            # Fetch from database Routines which are public OR routine has a associated user ID = logged in user
+            '''Fetch from database Routines which are public OR 
+            routine has a associated user ID = logged in user
+            '''
             stmt = db.select(Routine).filter(
                 (Routine.public == True) | (Routine.user_id == user_id)
             )
@@ -70,16 +77,25 @@ def get_routines():
     return routines_schema.dump(routines), 200
 
 
-# /routines/<str:target> - GET - Search for a public routine which targets a specific muscle group. User can also order the selected muscle group by popularity (how many likes), recent, and oldest using paramater query (e.g. ?sort=<filter> where filter can = popular, recent, oldest)
+# /routines/<str:target> - GET - Search for a public routine
 @routines_bp.route("/<target>", methods=["GET"])
 @jwt_required(optional=True)
 def get_target_routine(target):
+    '''Search for public routines which targets a specific muscle group.
+    User can also order the selected muscle group by:
+    popularity (how many likes), recent, and oldest 
+    using paramater query (e.g. ?sort=<filter> where filter can = popular, recent, oldest)
+    '''
+
     # Adjust user input to match format of VALID_TARGET for ease of entry
     target = target.lower().capitalize()
     
     # Check if target is valid
     if target not in VALID_TARGET:
-        return {"error": f"Invalid target group provided. Please search for a valid target. {', '.join(VALID_TARGET)}"}, 400
+        return {"error": f"Invalid target group provided. "
+                "Please search for a valid target. "
+                f"{', '.join(VALID_TARGET)}"
+                }, 400
 
     # Fetch user_id if exists
     user_id = get_jwt_identity()
@@ -87,22 +103,29 @@ def get_target_routine(target):
     # INITIAL QUERY with ALL routines filtered by target provided by user
     stmt = db.select(Routine).filter_by(target=target)
 
-    # THIS SECTION TAKES THE FILTERED STATEMENT AND ORGANISES THE QUERY BASED OFF QUERY PARAMETER 'SORT' PROVIDED BY USER
+    '''# THIS SECTION TAKES THE FILTERED STATEMENT AND 
+    ORGANISES THE QUERY BASED OFF QUERY PARAMETER 'SORT' PROVIDED BY USER
+    '''
 
     # Fetch 'sort' from query paramater if provided. Default to None if no paramater query provided by user
     sort = request.args.get("sort") or None
 
     # If user entered anything other than popular, recent or oldest AND query contains a value
     if sort not in ["popular", "recent", "oldest", None]:
-        return {"error": "The provided filter query could not be recognised. Please provide a paramater query that exists ('popular', 'recent', 'oldest')."}, 400
+        return {"error": "The provided filter query could not be recognised. "
+                "Please provide a paramater query that exists ('popular', 'recent', 'oldest')."}, 400
     
     # If user provided popular:
     if sort == "popular":
         # Recreate query to allow for the count of likes for each routine
-        stmt = stmt.outerjoin( # Perform an OUTERJOIN between initial query (filtered Routine Table) AND Like table where the routine id's match on both tables.
-            Like, Routine.id == Like.routine_id).group_by( # GROUP Routine IDs together
-                Routine.id).order_by( 
-            func.count(Like.id).desc())  # Order by number of likes each Routine has.
+        '''Perform an OUTERJOIN between initial query (filtered Routine Table) 
+        AND Like table where the routine id's match on both tables.
+        '''
+        stmt = (stmt.outerjoin(
+            Like, Routine.id == Like.routine_id) 
+            .group_by(Routine.id) # GROUP Routine IDs together
+            .order_by(func.count(Like.id).desc())
+            )  # Order by number of likes each Routine has.
     
     # If user provided oldest:
     elif sort == "oldest":
@@ -118,7 +141,9 @@ def get_target_routine(target):
         # Order initial query by routine title as default
         stmt = stmt.order_by(Routine.routine_title.asc())
 
-    # THIS SECTION FILTERS THE INITIAL QUERY WHICH IS DETERMINED BY USER STATUS (NOT LOGGED IN / LOGGED IN / ADMIN)
+    '''# THIS SECTION FILTERS THE INITIAL QUERY WHICH IS 
+    DETERMINED BY USER STATUS (NOT LOGGED IN / LOGGED IN / ADMIN)
+    '''
 
     # If user is logged in:
     if user_id:
@@ -166,11 +191,17 @@ def liked_routines():
         for like in likes:
             routine_ids.append(like.routine_id)
 
-        # JOIN the Routine and Like table by linking Routine(id) & Like(routine_id)
-        # Filter by selecting the routines where the routine id = the routines the user has liked (from the list created previously)
-        stmt = db.select(Routine).join(
-            Like, Routine.id == Like.routine_id).filter(
-                Routine.id.in_(routine_ids), Like.user_id == user_id).order_by(Like.created.desc())
+        # Create a new stmt where:
+        stmt = (
+            # Select Routine table
+            db.select(Routine)
+            # JOIN with Like table (link by routine IDs)
+            .join(Like, Routine.id == Like.routine_id)
+            # FILTER where Routine IDs (from routine_ids) = Like(user IDs)
+            .filter(Routine.id.in_(routine_ids), Like.user_id == user_id)
+            # ORDER by newest to oldest likes
+            .order_by(Like.created.desc())
+            )
         
         # Execute the query
         liked_routines = db.session.scalars(stmt)
@@ -181,9 +212,10 @@ def liked_routines():
     # Else, if user hasn't liked any posts yet
     return {"message": "You haven't liked any routines yet."}, 404
 
+
 # /routines/<int:routine_id>/copy - POST - Copy another user's routine as personal private routine
 @routines_bp.route("/<int:routine_id>/copy", methods=["POST"])
-@jwt_required()  # User must be logged in
+@jwt_required() # User must be logged in
 def copy_routine(routine_id):
     # Fetch the routine ID the user wants to copy in URL
     stmt = db.select(Routine).filter_by(id=routine_id)
@@ -200,7 +232,8 @@ def copy_routine(routine_id):
 
     # Copy the routine details
     copied_routine = Routine(
-        routine_title=f"{routine_to_copy.routine_title} (Copied from {routine_to_copy.user.username}", # Suffix to identify routine was copied
+        routine_title=(f"{routine_to_copy.routine_title} "
+                       f"(Copied from {routine_to_copy.user.username})"), # Suffix to identify routine was copied
         description=routine_to_copy.description,
         target=routine_to_copy.target,
         public=False,  # Set the copied routine to private by default
@@ -233,7 +266,10 @@ def copy_routine(routine_id):
     db.session.commit()
 
     # Return successful message along with 
-    return {"message": "The routine has been copied successfully!", "details": routine_schema.dump(copied_routine)}, 201
+    return {"message": "The routine has been copied successfully!", 
+            "details": routine_schema.dump(copied_routine)
+            }, 201
+
 
 # /routines - POST - create a new routine (must be logged in)
 @routines_bp.route("/", methods=["POST"])
@@ -245,7 +281,9 @@ def create_routine():
     # Fetch user's id from JWT
     logged_user_id = get_jwt_identity()
 
-    # Create an instance of a routine using the data from the JSON body. User_id is determined by jwt
+    '''Create an instance of a routine using the data 
+    from the JSON body. User_id is determined by jwt
+    '''
     routine = Routine(
         routine_title = body_data.get("routine_title"),
         description = body_data.get("description"),
@@ -262,10 +300,13 @@ def create_routine():
     return routine_schema.dump(routine), 201
 
 
-# /routines/<int:routine_id> - GET - fetch specific routine (can be viewed by all if public. If private, must be owner or admin to view)
+# /routines/<int:routine_id> - GET - fetch specific routine by ID
 @routines_bp.route("/<int:routine_id>", methods=["GET"])
 @jwt_required(optional=True)
 def get_specific_routine(routine_id):
+    '''Can be viewed by all if public. 
+    If private, must be owner or admin to view
+    '''
     # Attempt to select the routine from the database based off routine ID provided in URL
     stmt = db.select(Routine).filter_by(id=routine_id)
 
@@ -300,10 +341,10 @@ def get_specific_routine(routine_id):
         return {"error": "Sorry, authorised access is required. Please log in for verification"}, 401
 
 
-# /routines/<int:routine_id> - PUT/PATCH - update specific routine (must be owner or admin)
+# /routines/<int:routine_id> - PUT/PATCH - update specific routine
 @routines_bp.route("/<int:routine_id>", methods=["PUT", "PATCH"])
 @jwt_required()
-@auth_as_admin_or_owner
+@auth_as_admin_or_owner # must be owner of routine or admin
 def update_routine(routine_id):
     # Fetch data from the body of the request
     body_data = routine_schema.load(request.get_json(), partial=True)
@@ -320,7 +361,10 @@ def update_routine(routine_id):
     if routine.public:
         # Fetch updated value (either true or false) - validation completed in schema
         update_public = body_data.get('public')
-        # If updated value is public = False and the field is not None (i.e. the user has explicitly provided an input which = False)
+        '''If updated value is public = False 
+        and the field is not None 
+        (i.e. the user has explicitly provided an input which = False)
+        '''
         if update_public is not None and not update_public:
             # Select all associated likes in Like table
             stmt = db.select(Like).filter_by(routine_id=routine_id)
@@ -359,10 +403,10 @@ def delete_routine(routine_id):
     return {"message": f"Routine with ID {routine_id} has been deleted."}, 200
 
 
-# /routines/<int:routine_id>/exercise - POST - add a routine_exercise to a routine (must be owner of routine or admin)
+# /routines/<int:routine_id>/exercise - POST - add a routine_exercise to a routine
 @routines_bp.route("/<int:routine_id>/exercise", methods=["POST"])
 @jwt_required()
-@auth_as_admin_or_owner
+@auth_as_admin_or_owner # must be owner of routine or admin
 def add_routine_exercise(routine_id):
     # Fetch the routine from the Routine table. Filter by routine_id from URL
     stmt = db.select(Routine).filter_by(id=routine_id)
@@ -385,7 +429,9 @@ def add_routine_exercise(routine_id):
         # Return not found error
         return {"error": f"Exercise with ID {exercise_id} does not exist."}, 404
 
-    # Create a new object of an exercise routine based off body data - attach to specified routine ID in URL
+    '''Create a new object of an exercise routine 
+    based off body data - attach to specified routine ID in URL
+    '''
     routine_exercise = RoutineExercise(
         routine_id = routine_id,
         exercise_id = exercise_id,
@@ -407,10 +453,13 @@ def add_routine_exercise(routine_id):
     return routine_exercise_schema.dump(routine_exercise), 201
     
 
-# /routines/<int:routine_id>/<int:routine_exercise_id> - GET - View a specific routine exercise (public = view by everyone, private = owner or admin)
+# /routines/<int:routine_id>/<int:routine_exercise_id> - GET - View a specific routine exercise
 @routines_bp.route("/<int:routine_id>/exercise/<int:routine_exercise_id>", methods=["GET"])
 @jwt_required(optional=True)
 def get_routine_exercise(routine_id, routine_exercise_id):
+    '''(public = view by everyone, 
+    private = owner or admin)
+    '''
     # Fetch the routine in the URL
     stmt = db.select(Routine).filter_by(id=routine_id)
     routine = db.session.scalar(stmt)
@@ -429,7 +478,9 @@ def get_routine_exercise(routine_id, routine_exercise_id):
 
     # If routine_exercise does not belong to specified routine, provide error    
     if routine_exercise.routine_id != routine.id:
-        return {"error": f"Routine with ID '{routine_id}' does not have a routine exercise with ID '{routine_exercise_id}'."}, 404
+        return {"error": f"Routine with ID '{routine_id}' does not have "
+                f"a routine exercise with ID '{routine_exercise_id}'."
+                }, 404
 
     # Fetch logged in user's ID 
     user_id = get_jwt_identity()
@@ -453,7 +504,7 @@ def get_routine_exercise(routine_id, routine_exercise_id):
     return routine_exercise_schema.dump(routine_exercise), 200
 
 
-# /routines/<int:routine_id>/<int:routine_exercise_id> - PUT/PATCH - Update a specific routine exercise (must be owner or admin)
+# /routines/<int:routine_id>/<int:routine_exercise_id> - PUT/PATCH - Update a specific routine exercise 
 @routines_bp.route("/<int:routine_id>/exercise/<int:routine_exercise_id>", methods=["PUT", "PATCH"])
 @jwt_required()
 @auth_as_admin_or_owner # Verify if logged in user is owner of the routine ID or is admin
@@ -471,7 +522,8 @@ def update_routine_exercise(routine_id, routine_exercise_id):
     
     # If routine_exercise does not belong to specified routine, provide error    
     if routine_exercise.routine_id != routine_id:
-        return {"error": f"Routine with ID '{routine_id}' does not have a routine exercise with ID '{routine_exercise_id}'."}, 404
+        return {"error": f"Routine with ID '{routine_id}' does not have "
+                f"a routine exercise with ID '{routine_exercise_id}'."}, 404
     
     # Grab exercise ID from body of data for validation
     exercise_id = body_data.get('exercise_id')
@@ -507,7 +559,7 @@ def update_routine_exercise(routine_id, routine_exercise_id):
     return routine_exercise_schema.dump(routine_exercise), 200
 
 
-# /routines/<int:routine_id>/<int:routine_exercise_id> - DELETE - Delete a specific routine exercise (must be owner or admin)
+# /routines/<int:routine_id>/<int:routine_exercise_id> - DELETE - Delete a specific routine exercise
 @routines_bp.route("/<int:routine_id>/exercise/<int:routine_exercise_id>", methods=["DELETE"])
 @jwt_required()
 @auth_as_admin_or_owner # Verify if logged in user is owner of the routine ID or is admin
@@ -522,7 +574,9 @@ def delete_routine_exercise(routine_id, routine_exercise_id):
     
     # If routine_exercise does not belong to specified routine, provide error    
     if routine_exercise.routine_id != routine_id:
-        return {"error": f"Routine with ID '{routine_id}' does not have a routine exercise with ID '{routine_exercise_id}'."}, 404
+        return {"error": f"Routine with ID '{routine_id}' does not have "
+                f"a routine exercise with ID '{routine_exercise_id}'."
+                }, 404
 
     # For better error message:
     # Fetch the exercise name and routine title from the specified routine in the URL
@@ -534,7 +588,9 @@ def delete_routine_exercise(routine_id, routine_exercise_id):
     db.session.commit()
 
     # Return acknowledgement message
-    return {"message": f"The exercise '{exercise_name}' has been deleted from the routine named '{routine_title}'."}, 200
+    return {"message": f"The exercise '{exercise_name}' has been deleted "
+            f"from the routine named '{routine_title}'."
+            }, 200
 
 
 # /routines/<int:routine_id>/like - POST - like a routine (must be logged in)
@@ -556,7 +612,9 @@ def like_routine(routine_id):
     # Get user identity to perform below checks
     user_id = get_jwt_identity()
 
-    # Check if the user has already liked this routine (filter like table by user ID and routine ID specified in URL)
+    '''Check if the user has already liked this routine 
+    (filter like table by user ID and routine ID specified in URL)
+    '''
     like_stmt = db.select(Like).filter_by(user_id=user_id, routine_id=routine_id)
     like_exists = db.session.scalar(like_stmt)
     # If user has liked the routine
@@ -575,12 +633,15 @@ def like_routine(routine_id):
     db.session.commit()
 
     # Return a successfully liked message
-    return {"message": f"You have successly liked Routine with ID '{routine_id}' named {routine.routine_title}."}, 201
+    return {"Message": f"You have successly LIKED a routine! :)",
+            "Routine": f"{routine_id}", 
+            "Name": f"{routine.routine_title}."
+            }, 201
 
 
-# /routines/<int:routine_id>/like - DELETE - Delete a like from a specific routine (must be logged in)
+# /routines/<int:routine_id>/like - DELETE - Delete a like from a specific routine
 @routines_bp.route("/<int:routine_id>/like", methods=["DELETE"])
-@jwt_required() # Check if used is logged in
+@jwt_required() # User must be logged in
 def unlike_routine(routine_id):
     # Check if the routine exists (if not, return an error)
     stmt = db.select(Routine).filter_by(id=routine_id)
@@ -608,4 +669,7 @@ def unlike_routine(routine_id):
     db.session.commit()
 
     # Return a successfully unliked message
-    return {"message": f"You have unliked routine with ID '{routine_id}' named {routine.routine_title} successfully."}, 200
+    return {"message": f"You have UNLIKED a routine :(",
+            "ID": f"{routine_id}",
+            "Name": f"{routine.routine_title}"
+            }, 200
