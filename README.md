@@ -119,7 +119,7 @@ The ultimate premise of this API is to address the detering factors of social su
 ![alt text](docs/Trello/Trello-board-complete.png)
 
 A link to a copy of the entire Trello Workspace can be found here:  
-[https://trello.com/invite/b/66e1965df452f51f32ff2c94/ATTIb2433d8920ee741ceeda4fd0d9165de4C168FA8E/t2a2-api-webserver](https://trello.com/invite/b/66e1965df452f51f32ff2c94/ATTIb2433d8920ee741ceeda4fd0d9165de4C168FA8E/t2a2-api-webserver)
+[https://trello.com/b/2OOqzzxT/t2a2-api-webserver](https://trello.com/b/2OOqzzxT/t2a2-api-webserver)
 
 The creation of this API was conducted in parallel with the usage of Trello. Below are the main components ideas, and features of Trello that were utilised for task allocation and tracking purposes:
 
