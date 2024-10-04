@@ -875,7 +875,29 @@ db.session.commit() # <-- commit changes to database
 
 ## R6 - Entity Relationship Diagram
 
-Enter here
+![ERD](docs/ERD.png)
+
+**NOTE**: The above ERD is an updated version of the approved ERD for this project ([click here to view the legacy ERD](./docs/ERD-legacy.png)). An update was created for the purpose of additional attributes, primarily to the Routine Exercise model to allow for improved functionality within the API. An addition of a 'created' attribute was also add to the 'Like' model, again for addtional/improved functionality. Slight changes to a handful of data types were also made to simplify the API.
+
+### Normalisation
+
+To understand the level of normalisation for the above ERD, it is important explain:
+
+- What is normalisation?
+- What does each form of normalisation entails?
+
+Normalisation is the process of formatting tables in a specific way which aims to eliminate redundancy and inconsistency in data within relational databases.  
+
+Generally, there are six forms of normalisation with varying levels of reduced redundancy. 1NF being the lowest form to be considered normalised data, and 6NF being that all redundancy and dependencies have been removed.  
+
+#### 1NF
+
+
+The creation of 
+- brief explanation of how relations are normalised
+- include legend / key of notation and styles matching crows foot
+- how one table/model would look in another level of normalisation (e.g go down a level?)
+
 
 ## R7 - Explain the implemented models and the relationship, including how the relationships aid database implementation
 
