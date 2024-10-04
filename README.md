@@ -14,7 +14,7 @@ Please use the links below to quickly access key parts of this documentation.
 
 ### Requirements
 
-- Requirement 1: [The problem and the solution](#r1---explain-the-problem-that-this-app-will-solve-and-how-this-app-addresses-the-problem)
+- Requirement 1: [R1 - The problem and the solution](#r1---explain-the-problem-that-this-app-will-solve-and-how-this-app-addresses-the-problem)
 - Requirement 2: [R2 - Task allocation & Tracking](#r2---task-allocation--tracking-trello--github)
 - Requirement 3: [R3 - Third-Party Services, Packages & Dependencies](#r3---3rd-party-services-packages--dependencies)
 - Requirement 4: [R4 - Benefits & Drawbacks of Postgresql](#r4---benefits--drawbacks-of-of-postgresql)
@@ -146,9 +146,11 @@ Dates for the completion of each card was also utilised to create a time plan fo
 
 Screenshots for each card can be viewed below, or you can check out the public Trello board using the link at the top of this section.
 
-#### Documentation Category
+---
 
-##### Requirement Cards
+#### --> Documentation Category
+
+##### --> Requirement Cards
 
 ![alt text](docs/Trello/R1.png)
 ![alt text](docs/Trello/R2.png)
@@ -159,13 +161,17 @@ Screenshots for each card can be viewed below, or you can check out the public T
 ![alt text](docs/Trello/R7.png)
 ![alt text](docs/Trello/R8.png)
 
-#### Code Category
+---
 
-##### Initialisation Card
+#### --> Code Category
+
+##### --> Initialisation Card
 
 ![alt text](docs/Trello/initialisation-code.png)
 
-##### Model Cards
+---
+
+##### --> Model Cards
 
 ![alt text](docs/Trello/model-user.png)
 ![alt text](docs/Trello/model-exercise.png)
@@ -173,7 +179,9 @@ Screenshots for each card can be viewed below, or you can check out the public T
 ![alt text](docs/Trello/model-exercise-routine.png)
 ![alt text](docs/Trello/model-like.png)
 
-##### Controller Cards
+---
+
+##### --> Controller Cards
 
 ![alt text](docs/Trello/controller-cli.png)
 ![alt text](docs/Trello/controller-auth.png)
@@ -461,9 +469,11 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 
 SQLAlchemy is a dependency of Flask-SQLAlchemy. It is an object relational mapping (ORM) tool which allows for the abstraction and simplification of performing database operations. It does this by 'mapping' data within the database to Python objects. flask_sqlalchemy is an extension of flask which provides an easier time for developers to use SQLAlchemy within their application (acting like a bridge between SQLAlchemy and flask). The main features which are incorporated in this app are:
 
-- Metadata
-- Access to Columns and relationships for when defining models
-- Sessions
+- ORM (Object Relational Mapping) = mapping data in the database to Python classes and objects
+- Data Modelling = defining the structure and data types of tables/entities
+- Relationships = defining the relationships between tables
+- Transactions = the implementation of sessions and managing database interactions
+- Querying = Providing a SQL like language to allow for CRUD operations via the transactions.
 
 To install SQLAlchemy and Flask-SQLAlchemy, simply follow the below:
 
@@ -472,16 +482,16 @@ pip3 install sqlalchemy # installs SQLAlchemy
 pip3 install flask_sqlalchemy # installs flask_sqlalchemy
 ```
 
-An example of this implementation can be seen below for the RoutineExercise model within the API.
+An example of the implementation of SQLAlchemy can be seen below for the RoutineExercise model within the API.
 
 ```bash
-# Table for Routine Exercises
-class RoutineExercise(db.Model):
+# Table for Routine Exercises - Uses SQLAlchemy to map data from the database to classes & objects
+class RoutineExercise(db.Model): # Python class
     # Name of table
     __tablename__ = "routine_exercises"
 
-    # Attributes of table (columns)
-    id = db.Column(db.Integer, primary_key=True)
+    # Attributes of table (columns) - defines the structure and data types
+    id = db.Column(db.Integer, primary_key=True) # Primary key
     sets = db.Column(db.Integer)
     reps = db.Column(db.Integer)
     weight = db.Column(db.Integer)
@@ -492,7 +502,7 @@ class RoutineExercise(db.Model):
     seconds = db.Column(db.Integer)
     note = db.Column(db.String)
 
-    # Foreign Keys
+    # Foreign Keys - provides ability to 
     routine_id = db.Column(db.Integer, db.ForeignKey("routines.id"), nullable=False)
     exercise_id = db.Column(db.Integer, db.ForeignKey("exercises.id"), nullable=False)
 
@@ -663,57 +673,208 @@ Enter here
 
 ## R5 - Explain the Features, purpose and functionalities of the ORM system for this app
 
-Although the ORM (Object Relational Mapping) system has been explained in [R3 - SQLAlchemy & Flask-SQLAlchemy](#sqlalchemy--flask-sqlalchemy), a further breakdown will be provided below on how its specific features are directly integrated into this API and an explanation for each.
+Although the ORM (Object Relational Mapping) system has been explained in [R3 - SQLAlchemy & Flask-SQLAlchemy](#sqlalchemy--flask-sqlalchemy), a further breakdown will be provided below on how its specific features are directly integrated into this API and an explanation for each with an example.
 
-The ORM system incorporated into this API is SQLAlchemy. SQLAlchemy is an object relational mapping (ORM) tool which allows for the abstraction and simplification of performing database operations. It does this by 'mapping' data within the database to Python objects. flask_sqlalchemy is an extension of flask which provides an easier time for developers to use SQLAlchemy within their application (acting like a bridge between SQLAlchemy and flask). The main features which are incorporated in this app are:
+As aforementioned, the ORM system incorporated into this API is SQLAlchemy. SQLAlchemy is an object relational mapping (ORM) tool which allows for the abstraction and simplification of performing database operations. It does this by 'mapping' data within the database to Python objects (classes and objects). It also then allows for transactions and complex querying to manage python objects (rows of data within a table). The below uses the same list of features provided in [R3](#sqlalchemy--flask-sqlalchemy), but provides futher detail on how each feature or functionality works (including an example).
 
-- Metadata
-- Access to Columns and relationships for when defining models
-- Sessions
+### ORM (Object Relational Mapping)
 
-To install SQLAlchemy and Flask-SQLAlchemy, simply follow the below:
+The ORM system allows for the mapping of data to Python classes and objects. This is the core feature that allows for SQLAlchemy to function the way it does. To understand how ORM systems work, please see the below breakdown. It has been broken down into sub-categorised lists to better understand how each feature works with one another and how it all works together.
+
+#### 1. Data Modelling
+
+Data modelling is the **process** of defining the structure and columns of tables/entities. This can be broken down into columns and relationships.
+
+##### 1.1 Columns
+
+Columns are a are what defines the datatype for each attribute. The attributes of columns include the following:
+
+- **Data types** - e.g. Strings, Integers, Boolean, DateTime ([SQLAlchemy documentation for full list](https://docs.sqlalchemy.org/en/20/core/types.html))
+- **Default values** - provides a default value for the table, ensuring data integrity and avoiding null values
+- **Name** - the name of the attribute (e.g. email, username)
+- **Nullable** - allows the developer to set the attribute to be acceptable as null or not
+- **Constraints** - rules which define the type of data that can be entered into an attribute
+  - **Foreign keys** - refers to a primary key of another entity, helping the formation of relationships
+  - **Primary Key** - helps uniquely identify a single instance within the table
+  - **Check** - provides a condition that is required for a value to be inserted into the column (e.g. CheckConstraint("age >=18") --> allows only users aged 18 or over)
+  - **Unique** - enforces a constraint which denies any entry of a value which is already existing in the column
+
+Below are examples from two different models in the API to show how these attributes are used.
 
 ```BASH
-pip3 install sqlalchemy # installs SQLAlchemy
-pip3 install flask_sqlalchemy # installs flask_sqlalchemy
+'''From Users Model'''
+# Attributes of table, variables on the left are the names of each column
+  id = db.Column(db.Integer, primary_key=True) # primary key, with data type of integer
+  username = db.Column(db.String, nullable=False, unique=True) # can't be null, must contain a value, username must be unique (no duplicate values)
+  firstname = db.Column(db.String) # data type = String
+  lastname = db.Column(db.String) # data type = String
+  email = db.Column(db.String, nullable=False, unique=True) # must be unique, can't have duplicate email values in the column
+  password = db.Column(db.String, nullable=False) # must contain a value
+  is_admin = db.Column(db.Boolean, default=False) # default its value to the Boolean value of False if no value is provided
 ```
 
-An example of this implementation can be seen below for the RoutineExercise model within the API.
-
-```bash
-# Table for Routine Exercises
-class RoutineExercise(db.Model):
-    # Name of table
-    __tablename__ = "routine_exercises"
-
-    # Attributes of table (columns)
-    id = db.Column(db.Integer, primary_key=True)
-    sets = db.Column(db.Integer)
-    reps = db.Column(db.Integer)
-    weight = db.Column(db.Integer)
-    distance_km = db.Column(db.Integer)
-    distance_m = db.Column(db.Integer)
-    hours = db.Column(db.Integer)
-    minutes = db.Column(db.Integer)
-    seconds = db.Column(db.Integer)
-    note = db.Column(db.String)
-
-    # Foreign Keys
-    routine_id = db.Column(db.Integer, db.ForeignKey("routines.id"), nullable=False)
-    exercise_id = db.Column(db.Integer, db.ForeignKey("exercises.id"), nullable=False)
-
-    # Define relationships with exercise and routine table
-    exercise = db.relationship("Exercise", back_populates="routine_exercises")
-    routine = db.relationship("Routine", back_populates="routine_exercises")
+```BASH
+'''From RoutineExercise Model'''
+    
+'''Foreign Keys'''
+# defines a foreign key named "routine_id" as the primary key "id" from the "users" table
+  routine_id = db.Column(db.Integer, db.ForeignKey("routines.id"), nullable=False) 
+# defines a foreign key named "exercise_id" as the primary key "id" from the "exercises" table
+  exercise_id = db.Column(db.Integer, db.ForeignKey("exercises.id"), nullable=False) 
 ```
 
-#### Examples of sessions
+##### 1.2 Relationships
 
-```bash
-db.session.scalars(stmt).all() # Creating sessions
-db.session.add(exercise) # Adding to session
-db.session.commit() # Committing sessions to database
+Relationships are what allow the operation of complex queries. The main features and attributes of relationships which allow this functionality include:
+
+- **Primary and Foreign Keys** - despite being attributes as well, these form of a key part of creating relationships between tables as well. As defined in [1.1 Columns](#11-columns), by having unique identifiers for each instance in a table of values, a single instance can form a relationship with another instance on a separate table.
+- **Relationship attributes** - These attributes for relationships help define the type of relationship two tables have and how they can be related. This concept goes back to how one to many and many to many relationships are formed. The standard way in which these relationships are through the use of back_populates or backref, creating a bidirection relationship. This also assists particularly when junction/association tables are formed.
+
+See some snippets of code below which explains these features/attributes:
+
+```BASH
+'''From RoutineExercise Model'''
+
+'''Foreign Keys'''
+# defines a foreign key named "routine_id" as the primary key "id" from the "users" table
+  routine_id = db.Column(db.Integer, db.ForeignKey("routines.id"), nullable=False) 
+# defines a foreign key named "exercise_id" as the primary key "id" from the "exercises" table
+  exercise_id = db.Column(db.Integer, db.ForeignKey("exercises.id"), nullable=False) 
+
+'''Creates a attribute named "exercise". Then uses db.relationship to define the link between the "RoutineExercise" model and the "Exercise" model mentioned as an argument. It then uses backpopulates to "populate" the "Exercise" table with data from the RoutineExercise model'''
+# Define relationship between exercise and routine_exercise table
+  exercise = db.relationship("Exercise", back_populates="routine_exercises") 
+
+# With the help of marshmallow fields, allows exercise name to appear when routine exercises are called/input into JSON response
+# Retrieves the nested information of "exercise_name" from "ExerciseSchema" via the "exercise" attribute defined in the model
+  exercise_name = fields.Nested("ExerciseSchema", only=["exercise_name"], attribute="exercise")
 ```
+
+```BASH
+# Note: The relationship when using back_populates must also be defined in the Exercise Model
+
+'''From Exercise Model'''
+
+'''# uses db.relationship to define the link between the "Exercise" model and the "RoutineExercise" model mentioned as an argument. It then uses backpopulates to "populate" the "RoutineExercise" table with "exercise" data.'''
+# Define relationship with routine_exercise table
+  routine_exercises = db.relationship("RoutineExercise", back_populates="exercise")
+```
+
+#### 2. Metadata Generation
+
+Metadata generation can be metaphorically explained as the instructions manual or blueprint for creating the database in the database as per what was prescribed in the data modelling process.
+
+#### 3. Database Creation
+
+Database creation is then the process of actually creating the database, as per the metadata generated.
+
+It is however important to note that SQLAlchemy does not do this directly.  
+Another metaphor that can be used is that SQLAlchemy in this case is the project manager, and psycopg2-binary (in the case of this API) are the workers who actually execute the proces
+
+#### 4. Data Mapping
+
+Lastly, once the database is created in PostgreSQL, SQLAlchemy can now easily map the data in PostgreSQL with the Python classes it created during metadata generation.
+
+### Python Objects
+
+Another key component of ORM systems are the creation of objects and instance.
+When an instance of a python class is created, SQLAlchemy (with the help of psycopg2) can map and insert these objects into the PostgreSQL database.
+
+Below is an example of this where an instance of a routine exercise is being created under the RoutineExercise python class/table:
+
+```BASH
+'''Create a new object of an exercise routine 
+based off body data - attach to specified routine ID in URL
+'''
+# Python class / Table named RoutineExercicse
+routine_exercise = RoutineExercise(
+    '''values from the body of data received from a user 
+    which are assigned to columns of the table
+    '''
+    routine_id = routine_id,
+    exercise_id = exercise_id,
+    sets = body_data.get('sets'),
+    reps = body_data.get('reps'), 
+    weight = body_data.get('weight'), 
+    distance_km = body_data.get('distance_km'), 
+    distance_m = body_data.get('distance_m'), 
+    hours = body_data.get('hours'), 
+    minutes = body_data.get('minutes'), 
+    seconds = body_data.get('seconds'), 
+    note = body_data.get('note')
+)
+```
+
+### Sessions, transactions & querying
+
+#### Querying
+
+Querying is the powerful feature which puts the "SQL" in the name "SQLAlchemy".  
+It provides the ability to create SQL-like python code that allows generates queries to the PostgreSQL database.  
+One example of such query is the "select" query which is used extensively throughout this API:
+
+```BASH
+# Fetch all public routines
+'''creates a stmt/query to "select" the instances from 
+the "Routine" table where the attribute "public" = True'''
+stmt = db.select(Routine).filter_by(public=True)
+```
+
+#### Sessions & Transactions
+
+The feature and function of sessions & transactions can be liked to the git operations of "git add" & "git commit".  
+
+The creation of sessions provides a connection to the PostgreSQL database to perform CRUD operations based off the instructions a query has provided.  
+Two common examples used throughout this API include session.add() and session.delete():
+
+```BASH
+# Add each copied exercise object into the session
+db.session.add(copied_exercise) # <-- add()
+```
+
+```BASH
+'''A snippet of code taken from the "Update a routine" route within the routines controller'''
+
+if update_public is not None and not update_public:
+    # Select all associated likes in Like table
+    stmt = db.select(Like).filter_by(routine_id=routine_id) # <-- select() - filtering by routine_id
+    remove_likes = db.session.scalars(stmt) # retrieves the instances from the select operation
+    # For each selected like, delete from database
+    for like in remove_likes: 
+        db.session.delete(like) # <-- delete() - removes each 'like' instance 
+```
+
+#### Transactions
+
+Lastly, transactions are generally the "git commit" in the SQLAlchemy world. The two most common transactions include commit() and rollback()
+Commits are the equivalent of confirming a session operation and 'committing' that change to the database.
+Rollbacks, on the other hand, are in essence the reverse operation of commits. This type of transaction is usually included in code where an error occurs. A rollback will allow the database to revert back to how it was before the session started. Examples of the use of this feature can be seen below:
+
+```BASH
+# If routine is not originally public and exists, update attributes (if provided)
+routine.routine_title = body_data.get('routine_title', routine.routine_title)
+routine.description = body_data.get('description', routine.description)
+routine.target = body_data.get('target', routine.target)
+routine.public = body_data.get('public', routine.public)
+
+# Commit changes to database
+db.session.commit() # <-- commit changes to database
+```
+
+```BASH
+# Global IntegrityError handler. If integrity error occurs, rolls back session and returns error message with 400 HTTP status (bad request).
+    @app.errorhandler(IntegrityError)
+    def integrity_error(err):
+        db.session.rollback() # <-- Insert rollback() to revert any changes made during session
+        return {"error": "An unexpected database integrity error has occurred. To prevent any loss, we've rolled back any changes you've made."}, 400
+```
+
+- commit or rollback
+
+##### Session connects to database, track changes, manages what occurs in a transaction
+
+##### Transactions itself are the single operations to the database which are generally 
+the implementation of sessions and managing database interactions
 
 ---
 
