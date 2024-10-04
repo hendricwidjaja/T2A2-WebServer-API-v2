@@ -69,8 +69,12 @@ def delete_user(user_id):
     # Validate if user input is either boolean (true or false)
     if not isinstance(delete_public_routines, bool):
         # If not boolean, submit an error
-        return {"error": "Invalid input for 'delete_public_routines'. Please input true or false."}, 400
+        return {"error": "Invalid input for 'delete_public_routines'. "
+        "Please input true or false."
+        }, 400
 ```
+
+---
 
 ## R1 - Explain the problem that this app will solve and how this app addresses the problem
 
@@ -105,6 +109,8 @@ The application allows users to create accounts and follows a social media platf
 The application aims to provide further features in the future which will include more traditional social media type features such as messaging, following, posting and commenting. Not only this but it will also feature more fitness application related functions such as workout session logging and tracking.
 
 The ultimate premise of this API is to address the detering factors of social support, accountability and commitment as well as the cost of activities and facilities. This API allows the creation of a global community where others can contact eachother to keep eachother accountable, motivate one another, share their fitness goals and successes and form stronger commitments to fitness and health. By only needing access to the internet, it drives down the problem of accessibility. Who needs a personal trainer when you have can have a community in your pocket that can help you along the way.
+
+---
 
 ## R2 - Task Allocation & Tracking (Trello & GitHub)
 
@@ -179,6 +185,8 @@ git pull / git merge
 
 Although there were other useful features which were used within Git and GitHub such as the creation of **.gitignore** files, the above git commands form the basis of the main features used for source control and tracking changes to the project.
 
+---
+
 ## R3 - 3rd Party Services, Packages & Dependencies
 
 **NOTE**: For this application, it will be assumed that the user already has python3 installed.  
@@ -247,6 +255,8 @@ original form if deactivation was successful.
 coolguy@coolguylaptop:~ directory/of/your/project$ # Example output
 ```
 
+---
+
 ### PostgreSQL
 
 **PostgreSQL** is an object relational database management system which is incorporated into this application for this very purpose. It allows for the storage of data in tables, rows and columns. PostgreSQL contains various features which gives it a long standing history of being **ACID** compliant. It ensures the atomicity, consistency, integrity and durability of the data it stores. It's robustness and ability to support complicated queries makes it a strong choice for the API. It supports these complexities via its strong feature set of creating:
@@ -278,6 +288,8 @@ To **install** psycopg2-binary, simply follow the below:
 ```BASH
 pip3 install psycopg2-binary
 ```
+
+---
 
 ### Flask
 
@@ -348,6 +360,8 @@ from flask_bcrypt import Bcrypt # Importing
 pw_hash = bcrypt.generate_password_hash(password) # Hashing passwords
 bcrypt.check_password_hash(pw_hash, candidate) # Checking passwords
 ```
+
+---
 
 #### An example of password hashing
 
@@ -449,17 +463,118 @@ db.session.add(exercise) # Adding to session
 db.session.commit() # Committing sessions to database
 ```
 
+---
+
 ### Flask-Marshmallow, Marshmallow & marshmallow_sqlalchemy
 
 **Flask-Marshmallow** is a 3rd party package for Python which enables an easier and more streamlined approach for the serialisation and deserialisation of data. Flask-marshmallow can be seen as a bridge or interface between flask and marshmallow which provides further functionality and customisation options.
 
-**Marshmallow** is a dependency of Flask-Marshmallow which automatically gets installed at the same time and acts as the as the core library which manages the data serilization and deserialization. The process of data serialisation and deserialisation is important to allow for the conversion of data into understandable formats for both the client and API. Data received from clients are commonly provided in the body of HTTP requests using a serialised format such as JSON or XML. When this happens, Marshmallow will deserialise the data into a Python data structure, allowing the data to be used, manipulated and/or applied to logic within the API. Once the data is ready to be sent back to the client in the form of a response, marshmallow will serialise the data back into JSON format which gets attached to the body of the response.  
+**Marshmallow** is a dependency of Flask-Marshmallow and acts as the core library which manages the data serilization and deserialization. The process of data serialisation and deserialisation is important to allow for the conversion of data into understandable formats for both the client and API. Data received from clients are commonly provided in the body of HTTP requests using a serialised format such as JSON or XML. When this happens, Marshmallow will deserialise the data into a Python data structure, allowing the data to be used, manipulated and/or applied to logic within the API. Once the data is ready to be sent back to the client in the form of a response, marshmallow will serialise the data back into JSON format which gets attached to the body of the response.  
 
 In addition to this process, Marshmallow also provides the functionality for data validation. While simple data validation occurs at the flask level, Marshmallow does most of the heavy lifting when it comes to validation. In this API, it acts as the main bodyguard to the database, ensuring that the database only receives expected data and in predefined structures.
 
-**marshmallow_sqlalchemy** provides futher tools which can be utilised for 
+**marshmallow_sqlalchemy** is an extension of Marshmallow which provides further functionality when working with SQLAlchemy such as relationship handling, field customisation and even auto field generation.  
 
-**marshmallow_sqlalchemy** is an extension of Marshmallow which provides further functionality when working with SQLAlchemy such as relationship handling, field customisation
+An example of how marshmallow has been incorporated into this API is as per below code:
+
+Things to note usage of:
+
+**Fields**: Allows for the determining of various data types such as strings, integers, lists and boolean (others include DateTime and float). Additional which provide further functionality include:
+
+- Method: Provides ability to create custom logic for serialisation and deserialisation of data
+- Nested: Provides an indication that nested data should be included when serialising data. This is done by invoking another table where the developer can choose to nest specific or all data fields from that table.
+
+**validates**: A decorator that enables the ability to decorate a field and perform custom validation.  
+**OneOf**: Provides the ability to create a custom list of accepted inputs for a specific field.  
+**Length**: Provides the ability for data of a specific field to be given exact, minimum or maximum character limits.  
+
+```BASH
+# Import mashmallow modules for validation of fields and defining schemas
+from marshmallow import fields, validates
+from marshmallow.validate import OneOf, Length
+
+...more imports...
+
+# Table for Routine Model for reference
+class Routine(db.Model):
+    # Name of table
+    __tablename__ = "routines"
+
+    # Attributes of table
+    id = db.Column(db.Integer, primary_key=True)
+    routine_title = db.Column(db.String, nullable=False)
+    description = db.Column(db.String)
+    target = db.Column(db.String, nullable=False)
+    public = db.Column(db.Boolean, default=False, nullable=False)
+    last_updated = db.Column(
+        db.DateTime, 
+        server_default=func.current_timestamp(), 
+        onupdate=func.current_timestamp(), 
+        nullable=False
+        )
+
+    # Foreign Keys
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user = db.relationship("User", back_populates="routines")
+    routine_exercises = db.relationship("RoutineExercise", back_populates="routine", cascade="all, delete")
+    likes = db.relationship("Like", back_populates="routine", cascade="all, delete")
+
+    '''Function to count how many users have liked the specific instance of a routine. 
+    # Accesses relationship with Like model via 'likes'.
+    '''
+    def count_likes(self):
+        return len(self.likes)
+
+class RoutineSchema(ma.Schema):
+    routine_title = fields.String(validate=Length(max=50), error="Routine title cannot exceed 50 characters.")
+    description = fields.String(validate=Length(max=255), error="You have exceeded the 255 character count limit.")
+    target = fields.String(validate=OneOf(VALID_TARGET))
+    public = fields.Boolean(missing=False)
+    last_updated = fields.Method("format_timestamp")
+    created_by = fields.Nested("UserSchema", only=["username"], attribute="user")
+    routine_exercises = fields.List(fields.Nested('RoutineExerciseSchema'), attribute="routine_exercises")
+    '''Defines the "likes_count" field as an integer which is equal to 
+    the result of the "count_likes" method in the Routine model.
+    '''
+    likes_count = fields.Method("get_likes_count")
+
+    # Method to format the last_updated timestamp
+    def format_timestamp(self, routine):
+        return routine.last_updated.strftime("%Y-%m-%d %H:%M:%S")
+
+    # Method to call count_likes() on routine instance
+    def get_likes_count(self, routine):
+        return routine.count_likes()
+
+    # Create validation for public attribute
+    @validates("public")
+    def validates_public(self, value):
+        # If value is not boolean (true or false)
+        if not isinstance(value, bool):
+            raise ValueError("Could not recognise the value for 'public'. Please insert either true or false.")
+
+    # Confirms which fields can be visible
+    class Meta:
+        fields = (
+            "id", 
+            "routine_title", 
+            "description", 
+            "target", 
+            "public", 
+            "last_updated", 
+            "created_by", 
+            "routine_exercises", 
+            "likes_count"
+            )
+
+# to hand a single routine object
+routine_schema = RoutineSchema()
+# to hand a list of routine objects
+routines_schema = RoutineSchema(many=True)
+
+```
+
+---
 
 ### python-dotenv
 
@@ -491,6 +606,8 @@ def create_app():
 DATABASE_URL = "postgresql+psycopg2://<name_of_admin>:<password>@localhost:5432/<name_of_database>"
 JWT_SECRET_KEY = "<enter secret key>"
 ```
+
+---
 
 ## R4 - Benefits & Drawbacks of of Postgresql
 
