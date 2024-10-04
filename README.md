@@ -669,9 +669,48 @@ JWT_SECRET_KEY = "<enter secret key>"
 
 PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Object Relational Database Management System) which is commonly integrated in flask applications and is one of the most popular database services today due to its reach feature sets, ACID compliance and large community backing. In its most general sense, being a relational database management system infers that it stores data in the form of tables, columns and rows. Tables generally refer to entities, columns to attributes and rows to objects/instances. Although a database such as PostgreSQL has a variety of benefits as a database of choice for a project, no database comes without any drawbacks. The list of pros and cons for any database (PostgreSQL included) should always be considered prior to selecting a database of choice and should be based off the projects requirements.
 
+### Pros 
 
 
-Enter here
+#### ACID Compliance:
+One of the first benefits of Postgres is that it is ACID-compliant and has been so since 2001. The letters in the acronym ACID represent atomicity, consistency, isolation and durability respectively. 
+
+Atomicity implies that all queries within a transaction must succeed. If unsuccessful, it will cancel all previous queries within the same transaction. Postgres achieves this by supporting SQL queries such as commit and rollback which ensures that successful transactions are committed (saved) and failed transactions rollback (get discarded) (PostgreSQL n.d.). This prevents any accidental or unexpected failures to jeopardise the integrity of the data. 
+
+Consistency is defined as the ability to ensure that any data which is input into the database is verified and rejects any changes that may corrupt the validity of the database (Paudel A n.d.). Postgres implements consistency by supporting various types of constraints. These constraints include parameters such as primary and foreign keys, unique constraints and check constraints. Ensuring that the entries are unique through the use of primary and foreign keys prevent data duplication and retains the integrity of relational models. Check constraints are conditions which implement a rule that reject any entries that don't meet the specified condition/s. A simple example of a check constraint would be integrating a rule which ensures a person’s age that is entered into a database cannot be less than zero (Nasser H 2019). 
+
+Isolation is the ability for multiple transactions from different users to access and manipulate the data simultaneously without deteriorating the integrity of the data. Postgres achieves this by incorporating Multiversion Concurrency Control architecture (PostgreSQL n.d.). This function allows for transactions to essentially work on individual snapshots of the database. This allows for a consistent view of the data in isolation from other concurrent transactions. The snapshots are created by duplicating the data of an updated row and retaining the old version until it is no longer required by the transactions which began before the update.
+
+Durability relates to the retention of data once it is committed, ensuring that in the event of system failure or crashes, any committed data will still exist. Postgres ensures durability by using checkpoint functionality and write-ahead log (WAL). Checkpointing requires Postgres databases to write the current state of data to disk at regular intervals (every 5 minutes on default), while WAL essentially tracks the changes to a database in between checkpoints (PostgreSQL n.d.). This allows for the database to essentially create full recovery in the event of system crashes by returning the database to the state of its last checkpoint and then filling in the gaps between the checkpoint and the point of failure using the log documented in the WAL.
+The above factors allow Postgres to provide a database that ticks off both reliability and data integrity on a checklist of benefits.
+
+Another advantage of utilising Postgres as a database is its scalability. Using a highly scalable database allows an application to tackle any growing demands of usage and ensures that the application remains robust and responsive. Scalability can be implemented by upgrading the amount of resources to servers. Vertical scalability refers to the upgrade of a single server, while horizontal scalability pertains to creating or adding additional servers. Horizontal scaling also tends to provide the benefit of increased availability (Sean, C 2022). The main characteristics and functions which allow Postgres to achieve both aspects of scalability include: 
+
+#### Vertical Scalability:
+MVCC - Multiversion Concurrency Control as described previously provides the ability for multiple users to access and manipulate the same data simultaneously. This ability for a higher level of concurrency minimises the need for locking . Although locking is required to assist with the integrity of data, it prevents fluid access of the application for users and prevents scalability. MVCC allows Postgres to better manage the balancing of scalability and data integrity (PostgreSQL n.d.).
+Parallel Query Execution - This characteristic allows Postgres to inspect incoming queries or transactions and dictate if it can be broken down into smaller subqueries. The collection of subqueries can then be simultaneously carried out by separate CPU cores. The results of each subquery can then be reassembled to provide a final response. This implies improved performance in high stress workload environments by utilising additional resources on a server (PostgreSQL n.d.).
+Asynchronous Reads & Writes - The ability to read and write data to disk asynchronously allows Postgres to reduce the occurrence of bottlenecks in performance, while still ensuring data integrity. This ensures that when Postgres is performing tasks such as WAL and writing checkpoints, it still allows for the manipulation of data by users. Although this can create a heavy overhead load, Postgres provides various configuration abilities to allow the database to be custom tuned and optimised as required (Ahmed, I 2024).
+
+#### Horizontal Scalability and availability:
+Replication - Postgres provides the ability to create secondary servers by replicating its original database (generally handling read operations only). Once replication is finalised, the primary server can ensure that it is synchronised with each replica method of WAL streaming or logical decoding. This provides Postgres the ability to offload any read only operations to their secondary servers, providing an alleviated workload on the primary server. In addition to this, having replica servers also accommodates for any unexpected crashes or disaster events which can put the main server out of action. When an unforeseen circumstance occurs, Postgres can have one of its secondary databases take over as the main server, ensuring high availability.
+Sharding - This functionality allows Postgres to divide its data across multiple servers and can be separated horizontally or vertically. Sharding in a horizontal manner involves separating data by IDs or time ranges, while vertically sharding relates to separating data via categories such as reviews, inventory and products. By implementing an appropriate sharding strategy, factors such as performance, scalability and availability are greatly increased by sharing the workload across multiple servers.
+Clustering - Postgres enables the creation of multiple instances of itself in a ‘cluster’ of servers. It then incorporates a load balancer which dictates which server can best action the request. This generates better fault tolerance and distribution of load (Ahmed, I 2024). 
+
+### Cons
+
+Having such enormous power does not come without its limitations. While boasting all the above benefits, Postgres also suffers from various weaknesses in certain situations. It is extremely important to consider various factors and requirements when choosing the correct database for an application. An example which exemplifies how benefits can turn into drawbacks is the issues that Uber Engineering came across with Postgres in 2016 (Klitzke, E 2016).
+
+#### Issues with Scalability:
+While Postgres does allow for horizontal scaling through replication and clustering, its ability to implement sharding can tend to be more complex than on NoSQL databases, which utilise a more flexible architecture. Uber experienced issues when it came to horizontal scaling due to the sheer size and complexity of the data they stored. Since incorporating sharding in Postgres is already quite complex in itself, scaling horizontally using Postgres was not ideal in their particular scenario (DragonflyDB n.d.).
+
+#### Constraints in Performance:
+While Postgres is in fact advantageous for handling complex data, its rigorous process for ensuring high availability created a large amount of resource usage. This resulted in a large amount of additional workload to their servers due to Uber’s database architecture. When coupled with replication and Uber’s high demand environment, this generated a lot of strain on their servers and amplified the amount of write to disk processes (Klitzke, E 2016).
+
+#### Upgrade Issues:
+Due to Uber’s massive reach and usage, it is likely that Uber faced various issues when they were required to upgrade Postgres. Particularly around 2016, Uber expanded its business with various other services such as Uber Eats. This expansion resulted in a continuously evolving database which would have provided extra pressure on its maintenance. Due to factors such as data migration and schema changes when upgrading Postgres, a large deal of laborious testing and reconfiguration would have been resulted due to Uber’s complex database (Klitzke, E 2016).
+
+In conclusion, there are many benefits of utilising a database such as Postgres. Its ACID-compliant, has high availability, contains a vast amount of extensions and is backed by a strong community of developers, making it a compelling choice for various use cases. It can be particularly powerful for start-up businesses who require a robust and reliable database management system. It is important to remember that there are also a vast variety of different database management systems which provide different pros and cons. It is up to a business to decipher and determine which DBMS would suit their specific needs the most (Widjaja, H 2024).
+
 
 ## R5 - Explain the Features, purpose and functionalities of the ORM system for this app
 
@@ -875,13 +914,13 @@ db.session.commit() # <-- commit changes to database
 
 ## R6 - Entity Relationship Diagram
 
-![ERD](docs/ERD.png)
+![alt text](docs/ERD(latest).png)
 
 **NOTE**: The above ERD is an updated version of the approved ERD for this project ([click here to view the legacy ERD](./docs/ERD-legacy.png)). An update was created for the purpose of additional attributes, primarily to the Routine Exercise model to allow for improved functionality within the API. An addition of a 'created' attribute was also add to the 'Like' model, again for addtional/improved functionality. Slight changes to a handful of data types were also made to simplify the API.
 
 ### Normalisation
 
-To understand the level of normalisation for the above ERD, it is important explain:
+To understand the level of normalisation for this API (the above ERD), it is important explain:
 
 - What is normalisation?
 - What does each form of normalisation entails?
@@ -890,18 +929,432 @@ Normalisation is the process of formatting tables in a specific way which aims t
 
 Generally, there are six forms of normalisation with varying levels of reduced redundancy. 1NF being the lowest form to be considered normalised data, and 6NF being that all redundancy and dependencies have been removed.  
 
-#### 1NF
+The below will list the requirements needed to reach each level of normalisation.  
+
+- **1NF (1st Normal Form)**
+  - Each **cell** contains only 1x single value in each cell
+  - Each **column** of the table must be unique in name
+- **2NF (2nd Normal Form)**
+  - Each **field** that is not a key attribute must be dependent on the primary key and not on another non-key attribute
+- **3NF (3rd Normal Form)**
+  - Each **field** that is not a key attribute must be dependent on the primary key and **ONLY** the primary key.
+- **4NF (4th Normal Form)**
+  - Each **table** does not contain any multi-valued dependencies (e.g. if a certain attribute determines the possible values of another attribute)
+- **5NF (5th Normal Form)**
+  - Each **table** does not have any join dependencies (e.g. if its possible to recreate a table(A) with attributes from two different tables(B & C))
+- **6NF (6th Normal Form)**
+  - All levels of redundancy and dependencies have been removed
+
+Given that this ERD reaches 3NF in all tables (at a minimum). Only 1NF - 3NF will be explained in detail with an example of how a model for the 'Workout Together Planner' would look like in 1NF & 2NF.
+Explanations regarding relationships between each model will be explained in the next section of this requirement.
+
+#### 1NF (1st Normal Form)
+
+This level of normalisation is the lowest form for a table of data to be considered normalised. Its requirements include:
+
+- Each table can contain only one single value in each cell
+- Each column of the table must contain a unique name
+
+Ensuring that there are only atomic values in each cell provides better data integrity and eliminates complex querying by removing 'repeating groups' of data.  
+
+An example of how the ERD would look:
+
+![1NF-example](docs/1NF-example(1).png)
+
+In this example, multiple lines of the user's ID, name and all other user information would also appear for each exercise they create, every routine that they've liked or created, causing the database to become excessively large.
+
+#### 2NF (2nd Normal Form)
+
+The next level of normalisation removes data redundancy by adding the below to the list of requirements:
+
+- Each field that is not a key attribute must be dependent on the primary key and not on another non-key attribute.
+
+This requirement ensures that any column data within a table does not rely on any other fields.
+If this requirement is not fulfilled higher chances of anomalies may occur due to accidental deletions or inserting instances with blank values.
+The example in 1NF is a prime example of an ERD which fails this requirement as it has multiple attributes (e.g. exercise_name, routine_title) which do not only rely on the primary key.
+A 2NF example could be how like in the current ERD, there is an entity for Users and a separate entity for Exercises. Each attribute within each respective table that is not a key attribute relies on the primary key.  
+
+A snippet of the ERD is as per below:
+
+![2NF-example](docs/2NF-example.png)
+
+#### 3NF (3rd Normal Form)
+
+3NF addresses the issue of transitive dependencies. Transitive dependencies are when a non-key attribute relies on the primary key, but through another non-key attribute.
+This means that a non-key attribute only relies on the primary key, but indirectly through another non-key attribute. This coudl mean that if a particular value in a column is changed, there may be another attribute which is required to be changed as well.
+Reaching 3NF will mean that the requirement from 2NF becomes updated to the below:
+
+- Each field that is not a key attribute must be dependent on the primary key and ONLY the primary key.
+
+All models within the 'Workout Together Planner API' exemplifies a **minimum** of a 3NF level of normalisation due to the following:
+
+- All non-key attributes rely on the primary key and ONLY the primary key
+
+This requirement (as well as the requirements for 1NF & 2NF) is achieved by all models as each non-key attribute is independent from one another.
+A more detailed look into Exercises Model will be explained.
+
+##### Exercise model  
+
+- Key attributes = Exercise ID (PK) + User ID (FK)
+- Non-key attributes = exercise_name, description, body_part
+
+Explanation as to why each non-key attribute does not contain any transitive dependency on another non-key attribute:
+
+- Exercise Name: If exercise name changes, description and body_part attributes do not need to change unless the user chooses to change them independently
+- Description: If description name changes, exercise name and body_part attributes do not need to change unless the user chooses to change them independently
+- Body_part: If body_part changes, exercise name and description attributes do not need to change unless the user chooses to change them independently
+
+Since each attribute is independent and the user has full control of each value. The Exercise Model (along with all other models in the ERD) can be determined as 3NF (minimum). Reaching a level of 3NF assists with avoiding anomalies in data when values are updated or inserted and improves the overall accuracy and consistency of data.
+
+**The argument for 2NF/4NF**: An argument that one may have is that the models could also be 2NF, but also could be 4NF.  
+The reason for a 2NF possibility can be explained for a model such as the exercise model. In theory, an exercise name will usually correspond to a particular body part (e.g. bicep curls would fall under the body_part category of bicpes). However, given that a user has full control of the input for exercise name and they can **willingly** change the name of an exercise to anything they want, an exercise name would technically be independent from the body_part attribute. All non-key attributes do NOT have a relationship with any other non-key attribute and ONLY rely on the primary key. This is especially true because the primary key is only ONE value which is unique in every instance.  
+
+Because of this, one could also argue that the level of normalisation reaches 4NF. 4NF is the level of normalisation where no multi-valued dependencies occur. A multivalued dependency is when the value of a non-key attribute determines the value of another non-key attribute (indepdent of the primary key). Because of the pure indepdency of each attribute in each model of the ERD, it can be argued that all tables reach 4NF rather than 3NF.
+
+An example which explains this is the flexibility that a user has when inserting data. If a user decides to create an exercise and name it "Ultimate Bicep Curls", however the attribute for 'body_part' they choose to categorise the exercise under is "Legs". This theoretically doesn't make sense, however, this scenario could make sense to the user who created it.
+
+ this since there are no multivalue dependencies in any tables. 
 
 
-The creation of 
-- brief explanation of how relations are normalised
-- include legend / key of notation and styles matching crows foot
-- how one table/model would look in another level of normalisation (e.g go down a level?)
+Neither title, description, target, public or last_updated rely on each other (meaning if one of them change, it does not require any other attribute to be updated)
+This assists with avoiding anomalies in data as well as inconsistencies
 
+![3NF-eample](docs/3NF-Example(3).png)
+
+### Entity Relationships & Crows Foot notation
+
+**KEY/LEGEND**
+
+There are 4x main relationships between the models in the ERD (2x which form junction tables). A more simplified snapshot of each relationship was created to more easily discuss each relationship.
+
+Crows Foot Notation: The notation used in this ERD is crows foot notation. Conveniently, all relationships involved are either **(one) to (zero or many)** or a **(zero or many) to (zero or many)** relationship, which is identified by the below close up example. Different types of crows foot notation is distinguished by the 'notation' at the end of each line.  
+
+In the example below, there are three disintinguishable identifiers to determine what kind of relationship the notation refers to:
+
+- Cross Line (vertical or perpendicular) - on the left side
+  - Representation in relationship: **One**
+- Zero (or circle) - on the right side
+  - Representation in relationship: **Zero**
+- Crows foot (line splits into 3) - on the right side
+  - Representation in relationship: **Many**
+
+**(one) to (zero or many)**
+
+![alt text](docs/one-to-zero-or-many.png)
+
+**(zero or many) to (zero or many)**
+
+![alt text](docs/zero-or-many-to-zero-or-many.png)
+
+
+#### Users to Exercises
+
+- Verb: Creates
+- Relationship: (One) to (zero or many)
+- Description: A user can create zero or many exercises, however an exercise must belong to one user (the creator)
+
+![alt text](docs/relationships/Users-to-exercises-rel.png)
+
+---
+
+#### Users to Routines (Creation)
+
+- Verb: Creates
+- Relationship: (One) to (zero or many)
+- Description: A user can create zero or many routines, however a routine must belong to one user (the creator)
+
+![alt text](docs/relationships/users-routines.png)
+
+---
+
+#### Users to Routines (Likes - Juction table)
+
+- Verb: Likes / be liked
+- Relationship: (zero or many) to (zero or many)
+- Description: A user can like zero or many routines, and a routine can be liked by zero or many users
+
+![alt text](docs/relationships/Users-to-likes.png)
+
+![alt text](docs/relationships/likes-routines.png)
+
+---
+
+#### Exercises to Routines (Routine Exercise - Junction Table)
+
+- Verb: Contains / belongs
+- Relationship: (zero or many) to (zero or many)
+- Description: An exercise can belong to zero or many routines, and a routine can contain zero or many exercises
+
+![alt text](docs/relationships/routines-routine-exercises.png)
+
+![alt text](docs/relationships/routine_exercises-exercises.png)
+
+**NOTE**: It is important to note that while **(one) to (zero or many)** relationships are formed through the formation of junction tables, the relationship in itself is still **(zero or many) to (zero or many)** at its core.
+
+--
 
 ## R7 - Explain the implemented models and the relationship, including how the relationships aid database implementation
 
-Enter here
+The models within this API have been generated originally as per [legacy ERD](./docs/ERD-legacy.png) which was approved, but was amended with further attributes for functionality purposes and overall API simplicity.
+
+The models include **Users, Exercises, Routines, Likes & Routine Exercises**.
+
+An explanation regarding relationships with examples that relate to the models has been provided in the [relationships section](#relationships).
+
+Each model (given they have a relationship with one another) can access data from each other. These relationships from the [ERD](#r6---entity-relationship-diagram) can be mirrored in a Flask API project and are similarly determined cardinality relationships. Instead of using crows foot notation and drawing a diagram, this is implemented through the use of SQLAlchemy's relationship method and using the back_populates & backref attributes.
+
+For definitions of the relationships between each model, please refer to the extracted code of each model and refer to the bottom section of each which contains a code block that defines which model each model has a relationship with.
+
+### Users
+
+```BASH
+# Table for User Model
+class User(db.Model):
+    # Name of table
+    __tablename__ = "users"
+
+    # Attributes of table
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String, nullable=False, unique=True)
+    firstname = db.Column(db.String)
+    lastname = db.Column(db.String)
+    email = db.Column(db.String, nullable=False, unique=True)
+    password = db.Column(db.String, nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
+
+    # Define relationships with exercise, routine and like tables
+    exercises = db.relationship("Exercise", back_populates="user") # User model relationship with "Exercise model" - one to many
+    routines = db.relationship("Routine", back_populates="user") # User model relationship with "Routine model" - one to many
+    # All associated likes belonging to a user are to be deleted when user is deleted.
+    likes = db.relationship("Like", back_populates="user", cascade="all, delete")
+```
+
+### Exercises
+
+```BASH
+# Table for Exercises
+class Exercise(db.Model):
+    # Name of table
+    __tablename__ = "exercises"
+
+    # Attributes of table
+    id = db.Column(db.Integer, primary_key=True)
+    exercise_name = db.Column(db.String, nullable=False, unique=True)
+    description = db.Column(db.String)
+    body_part = db.Column(db.String, nullable=False)
+
+    # Foreign Keys
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+   
+    # Define relationships with user & routine_exercise table
+    user = db.relationship("User", back_populates="exercises")
+    routine_exercises = db.relationship("RoutineExercise", back_populates="exercise")
+```
+
+### Routines
+
+```BASH
+# Table for Routine Model
+class Routine(db.Model):
+    # Name of table
+    __tablename__ = "routines"
+
+    # Attributes of table
+    id = db.Column(db.Integer, primary_key=True)
+    routine_title = db.Column(db.String, nullable=False)
+    description = db.Column(db.String)
+    target = db.Column(db.String, nullable=False)
+    public = db.Column(db.Boolean, default=False, nullable=False)
+    last_updated = db.Column(
+        db.DateTime, 
+        server_default=func.current_timestamp(), 
+        onupdate=func.current_timestamp(), 
+        nullable=False
+        )
+
+    # Foreign Keys
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+
+    # Define relationships with user, routine exercises and likes table. 
+    # Delete all associated routine exercises and likes when routine is deleted.
+    '''Routine exercises associated with public routines will be kept by 
+    transferring ownership to an account called "DELETED ACCOUNT".
+    This only occurs if user chooses to NOT delete public routines 
+    when deleting account (see logic for delete user in auth_controller.py).
+    '''
+    user = db.relationship("User", back_populates="routines")
+    routine_exercises = db.relationship("RoutineExercise", back_populates="routine", cascade="all, delete")
+    likes = db.relationship("Like", back_populates="routine", cascade="all, delete")
+
+    '''Function to count how many users have liked the specific instance of a routine. 
+    # Accesses relationship with Like model via 'likes'.
+    '''
+    def count_likes(self):
+        return len(self.likes)
+```
+
+### Likes
+
+```BASH
+# Table for Like Model
+class Like(db.Model):
+    # Name of table
+    __tablename__ = "likes"
+
+    # Attributes of table
+    id = db.Column(db.Integer, primary_key=True)
+    # Foreign Keys
+    '''# Note: created attribute with timestamp has been added to 
+    assist "View Liked Routines" route to allow user to retrieve the 
+    like routines from most recently liked to oldest.
+    '''
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    routine_id = db.Column(db.Integer, db.ForeignKey("routines.id"), nullable=False)
+    created = db.Column(db.DateTime, server_default=func.current_timestamp(), nullable=False)
+
+    # Define relationships with routine and user table 
+    routine = db.relationship("Routine", back_populates="likes")
+    user = db.relationship("User", back_populates="likes")
+```
+
+### Routine Exercises
+
+```BASH
+# Table for Routine Exercises
+class RoutineExercise(db.Model):
+    # Name of table
+    __tablename__ = "routine_exercises"
+
+    # Attributes of table
+    id = db.Column(db.Integer, primary_key=True)
+    sets = db.Column(db.Integer)
+    reps = db.Column(db.Integer)
+    weight = db.Column(db.Integer)
+    distance_km = db.Column(db.Integer)
+    distance_m = db.Column(db.Integer)
+    hours = db.Column(db.Integer)
+    minutes = db.Column(db.Integer)
+    seconds = db.Column(db.Integer)
+    note = db.Column(db.String)
+
+    # Foreign Keys
+    routine_id = db.Column(db.Integer, db.ForeignKey("routines.id"), nullable=False)
+    exercise_id = db.Column(db.Integer, db.ForeignKey("exercises.id"), nullable=False)
+
+    # Define relationships with exercise and routine table
+    exercise = db.relationship("Exercise", back_populates="routine_exercises")
+    routine = db.relationship("Routine", back_populates="routine_exercises")
+```
+
+## Relationships
+
+Relationships are what allow the operation of complex queries. The main features and attributes of relationships which allow this functionality include:
+
+- **Primary and Foreign Keys** - despite being attributes as well, these form of a key part of creating relationships between tables as well. As defined in [1.1 Columns](#11-columns), by having unique identifiers for each instance in a table of values, a single instance can form a relationship with another instance on a separate table.
+- **Relationship attributes** - These attributes for relationships help define the type of relationship two tables have and how they can be related. This concept goes back to how one to many and many to many relationships are formed. The standard way in which these relationships are through the use of back_populates or backref, creating a bidirection relationship. This also assists particularly when junction/association tables are formed.
+
+See some snippets of code below which explains these features/attributes:
+
+```BASH
+'''From RoutineExercise Model'''
+
+'''Foreign Keys'''
+# defines a foreign key named "routine_id" as the primary key "id" from the "users" table
+  routine_id = db.Column(db.Integer, db.ForeignKey("routines.id"), nullable=False) 
+# defines a foreign key named "exercise_id" as the primary key "id" from the "exercises" table
+  exercise_id = db.Column(db.Integer, db.ForeignKey("exercises.id"), nullable=False) 
+
+'''Creates a attribute named "exercise". Then uses db.relationship to define the link between the "RoutineExercise" model and the "Exercise" model mentioned as an argument. It then uses backpopulates to "populate" the "Exercise" table with data from the RoutineExercise model'''
+# Define relationship between exercise and routine_exercise table
+  exercise = db.relationship("Exercise", back_populates="routine_exercises") 
+
+# With the help of marshmallow fields, allows exercise name to appear when routine exercises are called/input into JSON response
+# Retrieves the nested information of "exercise_name" from "ExerciseSchema" via the "exercise" attribute defined in the model
+  exercise_name = fields.Nested("ExerciseSchema", only=["exercise_name"], attribute="exercise")
+```
+
+```BASH
+# Note: The relationship when using back_populates must also be defined in the Exercise Model
+
+'''From Exercise Model'''
+
+'''# uses db.relationship to define the link between the "Exercise" model and the "RoutineExercise" model mentioned as an argument. It then uses backpopulates to "populate" the "RoutineExercise" table with "exercise" data.'''
+# Define relationship with routine_exercise table
+  routine_exercises = db.relationship("RoutineExercise", back_populates="exercise")
+```
+
+### Sessions, transactions & querying
+
+#### Querying
+
+Querying is the powerful feature which puts the "SQL" in the name "SQLAlchemy".  
+It provides the ability to create SQL-like python code that allows generates queries to the PostgreSQL database.  
+One example of such query is the "select" query which is used extensively throughout this API:
+
+```BASH
+# Fetch all public routines route
+'''creates a stmt/query to "select" the instances from 
+the "Routine" table where the attribute "public" = True'''
+stmt = db.select(Routine).filter_by(public=True)
+```
+
+Another example could 
+
+```BASH
+    # Check if given username and/or email exist in database
+    user_stmt = db.select(User).filter_by(username=username)
+    email_stmt = db.select(User).filter_by(email=email)
+```
+
+#### Sessions & Transactions
+
+The feature and function of sessions & transactions can be liked to the git operations of "git add" & "git commit".  
+
+The creation of sessions provides a connection to the PostgreSQL database to perform CRUD operations based off the instructions a query has provided.  
+Two common examples used throughout this API include session.add() and session.delete():
+
+```BASH
+# Add each copied exercise object into the session
+db.session.add(copied_exercise) # <-- add()
+```
+
+```BASH
+'''A snippet of code taken from the "Update a routine" route within the routines controller'''
+
+if update_public is not None and not update_public:
+    # Select all associated likes in Like table
+    stmt = db.select(Like).filter_by(routine_id=routine_id) # <-- select() - filtering by routine_id
+    remove_likes = db.session.scalars(stmt) # retrieves the instances from the select operation
+    # For each selected like, delete from database
+    for like in remove_likes: 
+        db.session.delete(like) # <-- delete() - removes each 'like' instance 
+```
+
+#### Transactions
+
+Lastly, transactions are generally the "git commit" in the SQLAlchemy world. The two most common transactions include commit() and rollback()
+Commit() is the equivalent of confirming or implementing a session operation, and then 'committing' that change to the database.
+Rollbacks, on the other hand, are in essence the reverse operation of commits. This type of transaction is usually included in code where an error occurs. A rollback will allow the database to revert back to how it was before the session started. Examples of the use of this feature can be seen below:
+
+```BASH
+# If routine is not originally public and exists, update attributes (if provided)
+routine.routine_title = body_data.get('routine_title', routine.routine_title)
+routine.description = body_data.get('description', routine.description)
+routine.target = body_data.get('target', routine.target)
+routine.public = body_data.get('public', routine.public)
+
+# Commit changes to database
+db.session.commit() # <-- commit changes to database
+```
+
+```BASH
+# Global IntegrityError handler. If integrity error occurs, rolls back session and returns error message with 400 HTTP status (bad request).
+    @app.errorhandler(IntegrityError)
+    def integrity_error(err):
+        db.session.rollback() # <-- Insert rollback() to revert any changes made during session
+        return {"error": "An unexpected database integrity error has occurred. To prevent any loss, we've rolled back any changes you've made."}, 400
+```
 
 ## R8 - API Endpoints Tutorial & Explanation
 
