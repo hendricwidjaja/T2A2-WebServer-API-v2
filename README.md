@@ -116,6 +116,8 @@ The ultimate premise of this API is to address the detering factors of social su
 
 ### Trello
 
+![alt text](docs/Trello/Trello-board-complete.png)
+
 A link to a copy of the entire Trello Workspace can be found here:  
 [https://trello.com/invite/b/66e1965df452f51f32ff2c94/ATTIb2433d8920ee741ceeda4fd0d9165de4C168FA8E/t2a2-api-webserver](https://trello.com/invite/b/66e1965df452f51f32ff2c94/ATTIb2433d8920ee741ceeda4fd0d9165de4C168FA8E/t2a2-api-webserver)
 
@@ -132,7 +134,51 @@ Each group was separated into futher categories/lists to allow the tracking of p
 - WIP (Work in progress)
 - Completed
 
-Given the above structure, the creation of 'cards' could be implemented. Each card contained various small-medium sized tasks which needed to be completed to finalise the project as a whole. I decided to breakdown the tasks for documentation as per the requirements in the assignment (R1 - R8).  Each requirement was then broken down into smaller tasks, which made the completion of the assignment more manageable. On the category of code related cards, each card generally represented the completion of a model or a controller within the API. Each of these would then include smaller tasks such as creating a new route, completing a new feature, code refactoring, testing and reviewing. These smaller tasks were generally input as individual items in the checklist section of a requirement or code task. Labels were also featured on the code cards for easier distinction between model and controller related cards. Dates for the completion of each card was also utilised to create a time plan for completion of each task, with the aim to be able to finalise and submit the assignment by the due date.
+Given the above structure, the creation of 'cards' could be implemented. Each card contained various small-medium sized tasks which needed to be completed to finalise the project as a whole.  
+
+I decided to breakdown the tasks for documentation as per the requirements in the assignment (R1 - R8).  Each requirement was then broken down into smaller tasks, which made the completion of the assignment more manageable. This includes tasks such as research, other specific requirement tasks and format / review.
+In the category of code related cards, each card generally represented the completion of a model or a controller within the API. Each of these would again then include smaller tasks such as creating a new route, completing a new feature, code refactoring, testing and reviewing.  
+These smaller tasks were generally input as individual items in the checklist section of a requirement or code task.  
+
+Labels were also featured on the code cards for easier distinction between model and controller related cards.  
+
+Dates for the completion of each card was also utilised to create a time plan for completion of each task, and the assignment as a whole.
+
+Screenshots for each card can be viewed below, or you can check out the public Trello board using the link at the top of this section.
+
+#### Documentation Category
+
+##### Requirement Cards
+
+![alt text](docs/Trello/R1.png)
+![alt text](docs/Trello/R2.png)
+![alt text](docs/Trello/R3.png)
+![alt text](docs/Trello/R4.png)
+![alt text](docs/Trello/R5.png)
+![alt text](docs/Trello/R6.png)
+![alt text](docs/Trello/R7.png)
+![alt text](docs/Trello/R8.png)
+
+#### Code Category
+
+##### Initialisation Card
+
+![alt text](docs/Trello/initialisation-code.png)
+
+##### Model Cards
+
+![alt text](docs/Trello/model-user.png)
+![alt text](docs/Trello/model-exercise.png)
+![alt text](docs/Trello/model-routine.png)
+![alt text](docs/Trello/model-exercise-routine.png)
+![alt text](docs/Trello/model-like.png)
+
+##### Controller Cards
+
+![alt text](docs/Trello/controller-cli.png)
+![alt text](docs/Trello/controller-auth.png)
+![alt text](docs/Trello/controller-exercise.png)
+![alt text](docs/Trello/controller-routines.png)
 
 ---
 
@@ -142,8 +188,8 @@ Given the above structure, the creation of 'cards' could be implemented. Each ca
 
 The remote git repositories which are hosted on GitHub can be found using the links below:
 
-Legacy Repository: [https://github.com/hendricwidjaja/T2A2-Webserver-API](https://github.com/hendricwidjaja/T2A2-Webserver-API)  
-Current Repository: [https://github.com/hendricwidjaja/T2A2WebServerAPI](https://github.com/hendricwidjaja/T2A2WebServerAPI)
+**Legacy Repository**: [https://github.com/hendricwidjaja/T2A2-Webserver-API](https://github.com/hendricwidjaja/T2A2-Webserver-API)  
+**Current Repository**: [https://github.com/hendricwidjaja/T2A2WebServerAPI](https://github.com/hendricwidjaja/T2A2WebServerAPI)
 
 GitHub and Git were also used extensively throughout the creation of this API to date. As a source control tool (Git) which can be shared on the cloud via remote repositories (GitHub), any user can easily manage and track changes, 'save' various versions and even revert back to previous versions if need be. The main useful tools which were applied for the creation of this API include:
 
@@ -617,7 +663,59 @@ Enter here
 
 ## R5 - Explain the Features, purpose and functionalities of the ORM system for this app
 
-Enter here
+Although the ORM (Object Relational Mapping) system has been explained in [R3 - SQLAlchemy & Flask-SQLAlchemy](#sqlalchemy--flask-sqlalchemy), a further breakdown will be provided below on how its specific features are directly integrated into this API and an explanation for each.
+
+The ORM system incorporated into this API is SQLAlchemy. SQLAlchemy is an object relational mapping (ORM) tool which allows for the abstraction and simplification of performing database operations. It does this by 'mapping' data within the database to Python objects. flask_sqlalchemy is an extension of flask which provides an easier time for developers to use SQLAlchemy within their application (acting like a bridge between SQLAlchemy and flask). The main features which are incorporated in this app are:
+
+- Metadata
+- Access to Columns and relationships for when defining models
+- Sessions
+
+To install SQLAlchemy and Flask-SQLAlchemy, simply follow the below:
+
+```BASH
+pip3 install sqlalchemy # installs SQLAlchemy
+pip3 install flask_sqlalchemy # installs flask_sqlalchemy
+```
+
+An example of this implementation can be seen below for the RoutineExercise model within the API.
+
+```bash
+# Table for Routine Exercises
+class RoutineExercise(db.Model):
+    # Name of table
+    __tablename__ = "routine_exercises"
+
+    # Attributes of table (columns)
+    id = db.Column(db.Integer, primary_key=True)
+    sets = db.Column(db.Integer)
+    reps = db.Column(db.Integer)
+    weight = db.Column(db.Integer)
+    distance_km = db.Column(db.Integer)
+    distance_m = db.Column(db.Integer)
+    hours = db.Column(db.Integer)
+    minutes = db.Column(db.Integer)
+    seconds = db.Column(db.Integer)
+    note = db.Column(db.String)
+
+    # Foreign Keys
+    routine_id = db.Column(db.Integer, db.ForeignKey("routines.id"), nullable=False)
+    exercise_id = db.Column(db.Integer, db.ForeignKey("exercises.id"), nullable=False)
+
+    # Define relationships with exercise and routine table
+    exercise = db.relationship("Exercise", back_populates="routine_exercises")
+    routine = db.relationship("Routine", back_populates="routine_exercises")
+```
+
+#### Examples of sessions
+
+```bash
+db.session.scalars(stmt).all() # Creating sessions
+db.session.add(exercise) # Adding to session
+db.session.commit() # Committing sessions to database
+```
+
+---
 
 ## R6 - Entity Relationship Diagram
 
