@@ -1299,7 +1299,7 @@ the "Routine" table where the attribute "public" = True'''
 stmt = db.select(Routine).filter_by(public=True)
 ```
 
-Another example could 
+Another example could which is used within the API:
 
 ```BASH
     # Check if given username and/or email exist in database
@@ -1333,7 +1333,7 @@ if update_public is not None and not update_public:
 
 #### Transactions
 
-Lastly, transactions are generally the "git commit" in the SQLAlchemy world. The two most common transactions include commit() and rollback()
+Transactions are generally the "git commit" in the SQLAlchemy world. The two most common transactions include commit() and rollback()
 Commit() is the equivalent of confirming or implementing a session operation, and then 'committing' that change to the database.
 Rollbacks, on the other hand, are in essence the reverse operation of commits. This type of transaction is usually included in code where an error occurs. A rollback will allow the database to revert back to how it was before the session started. Examples of the use of this feature can be seen below:
 
