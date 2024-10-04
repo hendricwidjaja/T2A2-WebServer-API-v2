@@ -667,7 +667,9 @@ JWT_SECRET_KEY = "<enter secret key>"
 
 ## R4 - Benefits & Drawbacks of of Postgresql
 
-PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Object Relational Database Management System) which is commonly integrated in flask applications and is one of the most popular database services today due to its reach feature sets, ACID compliance and large community backing. In its most general sense, being a relational database management system infers that it stores data in the form of tables, columns and rows. Tables generally refer to entities, columns to attributes and rows to objects or instances.
+PostgreSQL (previously and still known as Postgres in short) is an ORDBMS (Object Relational Database Management System) which is commonly integrated in flask applications and is one of the most popular database services today due to its reach feature sets, ACID compliance and large community backing. In its most general sense, being a relational database management system infers that it stores data in the form of tables, columns and rows. Tables generally refer to entities, columns to attributes and rows to objects/instances. Although a database such as PostgreSQL has a variety of benefits as a database of choice for a project, no database comes without any drawbacks. The list of pros and cons for any database (PostgreSQL included) should always be considered prior to selecting a database of choice and should be based off the projects requirements.
+
+
 
 Enter here
 
@@ -847,7 +849,7 @@ if update_public is not None and not update_public:
 #### Transactions
 
 Lastly, transactions are generally the "git commit" in the SQLAlchemy world. The two most common transactions include commit() and rollback()
-Commits are the equivalent of confirming a session operation and 'committing' that change to the database.
+Commit() is the equivalent of confirming or implementing a session operation, and then 'committing' that change to the database.
 Rollbacks, on the other hand, are in essence the reverse operation of commits. This type of transaction is usually included in code where an error occurs. A rollback will allow the database to revert back to how it was before the session started. Examples of the use of this feature can be seen below:
 
 ```BASH
@@ -868,13 +870,6 @@ db.session.commit() # <-- commit changes to database
         db.session.rollback() # <-- Insert rollback() to revert any changes made during session
         return {"error": "An unexpected database integrity error has occurred. To prevent any loss, we've rolled back any changes you've made."}, 400
 ```
-
-- commit or rollback
-
-##### Session connects to database, track changes, manages what occurs in a transaction
-
-##### Transactions itself are the single operations to the database which are generally 
-the implementation of sessions and managing database interactions
 
 ---
 
