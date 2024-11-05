@@ -9,7 +9,7 @@ Please use the links below to quickly access key parts of this documentation.
 ### Project Management & Task Allocation & Tracking
 
 - GitHub (Legacy Repository): [https://github.com/hendricwidjaja/T2A2-Webserver-API](https://github.com/hendricwidjaja/T2A2-Webserver-API)  
-- GitHub (Current Repository): [https://github.com/hendricwidjaja/T2A2WebServerAPI](https://github.com/hendricwidjaja/T2A2WebServerAPI)
+- GitHub (Current Repository): [https://github.com/hendricwidjaja/T2A2-WebServer-API-v2](https://github.com/hendricwidjaja/T2A2-WebServer-API-v2)
 - Trello: [https://trello.com/b/2OOqzzxT/t2a2-api-webserver](https://trello.com/b/2OOqzzxT/t2a2-api-webserver)
 
 ### Requirements
@@ -197,7 +197,7 @@ Screenshots for each card can be viewed below, or you can check out the public T
 The remote git repositories which are hosted on GitHub can be found using the links below:
 
 **Legacy Repository**: [https://github.com/hendricwidjaja/T2A2-Webserver-API](https://github.com/hendricwidjaja/T2A2-Webserver-API)  
-**Current Repository**: [https://github.com/hendricwidjaja/T2A2WebServerAPI](https://github.com/hendricwidjaja/T2A2WebServerAPI)
+**Current Repository**: [https://github.com/hendricwidjaja/T2A2-WebServer-API-v2](https://github.com/hendricwidjaja/T2A2-WebServer-API-v2)
 
 GitHub and Git were also used extensively throughout the creation of this API to date. As a source control tool (Git) which can be shared on the cloud via remote repositories (GitHub), any user can easily manage and track changes, 'save' various versions and even revert back to previous versions if need be. The main useful tools which were applied for the creation of this API include:
 
