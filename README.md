@@ -803,7 +803,7 @@ See some snippets of code below which explains these features/attributes:
 
 #### 2. Metadata Generation
 
-Metadata generation can be metaphorically explained as the instructions manual or blueprint for creating the database in the database as per what was prescribed in the data modelling process.
+Metadata generation can be metaphorically explained as the instructions manual or blueprint for creating the database as per what was prescribed in the data modelling process.
 
 #### 3. Database Creation
 
@@ -1333,7 +1333,7 @@ if update_public is not None and not update_public:
 
 #### Transactions
 
-Transactions are generally the "git commit" in the SQLAlchemy world. The two most common transactions include commit() and rollback()
+Transactions are essentially the "git commit" in the SQLAlchemy world. The two most common transactions include commit() and rollback().
 Commit() is the equivalent of confirming or implementing a session operation, and then 'committing' that change to the database.
 Rollbacks, on the other hand, are in essence the reverse operation of commits. This type of transaction is usually included in code where an error occurs. A rollback will allow the database to revert back to how it was before the session started. Examples of the use of this feature can be seen below:
 
